@@ -9,12 +9,21 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
+# Parse version from git
+execute_process(
+    COMMAND git describe --all --tags --dirty
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 include_directories(
   "../include"
   "../priv_include"
 )
 file(GLOB srcs CONFIGURE_DEPENDS
   "../src/common/*.cpp"
+  "../src/linux/logger.cpp"
   "../src/testing/*.cpp"
   "tests/*.cpp"
 )
@@ -26,3 +35,4 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(kvik_test PRIVATE Threads::Threads)
 target_link_libraries(kvik_test PRIVATE Catch2::Catch2WithMain)
+target_compile_definitions(kvik_test PRIVATE "-DGIT_VERSION=\"${GIT_VERSION}\"")
