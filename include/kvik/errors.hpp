@@ -21,13 +21,13 @@ namespace kvik
     /**
      * Kvik error code
      *
-     * Anything else than `KvikErr::success` is considered as failure.
+     * Anything else than `KvikErr::SUCCESS` is considered as failure.
      * The list of errors will expand with time.
      */
     enum class ErrCode : uint_fast16_t
     {
-        success = 0,
-        generic_failure = 1,
+        SUCCESS = 0,
+        GENERIC_FAILURE = 1,
     };
 
 #define KVIK_STRINGIZE_INNER(x) #x
@@ -72,7 +72,7 @@ namespace kvik
     do                               \
     {                                \
         ErrCode err = (x);           \
-        if (err != ErrCode::success) \
+        if (err != ErrCode::SUCCESS) \
         {                            \
             return err;              \
         }                            \
@@ -82,7 +82,7 @@ namespace kvik
     do                               \
     {                                \
         ErrCode err = (x);           \
-        if (err != ErrCode::success) \
+        if (err != ErrCode::SUCCESS) \
         {                            \
             return;                  \
         }                            \
@@ -92,7 +92,7 @@ namespace kvik
     do                                  \
     {                                   \
         ErrCode err = (x);              \
-        if (err != ErrCode::success)    \
+        if (err != ErrCode::SUCCESS)    \
         {                               \
             KVIK_THROW_EXC(msg);        \
         }                               \
