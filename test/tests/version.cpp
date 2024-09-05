@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include <string>
+
 #include "kvik/version.hpp"
 #include "kvik/logger.hpp"
 
@@ -7,5 +9,6 @@ using namespace kvik;
 
 TEST_CASE("Version is not unknown", "[Version]")
 {
-    REQUIRE(VERSION != "unknown");
+    CHECK(!VERSION_UNKNOWN);
+    CHECK(std::string(VERSION) != "unknown");
 }

@@ -16,7 +16,9 @@ namespace kvik
      */
 #ifdef GIT_VERSION
     constexpr const char* const VERSION = GIT_VERSION;
+    constexpr const bool VERSION_UNKNOWN = false;
 #else
     constexpr const char* const VERSION = "unknown";
+    constexpr const bool VERSION_UNKNOWN = true;
 #endif
 } // namespace kvik

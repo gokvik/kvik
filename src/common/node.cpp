@@ -18,6 +18,9 @@ namespace kvik
 {
     INode::INode()
     {
-        KVIK_LOGI("Kvik version: %s", kvik::VERSION);
+        if (!VERSION_UNKNOWN)
+        {
+            KVIK_LOGI("Kvik version: %s", VERSION);
+        }
     }
 } // namespace kvik
