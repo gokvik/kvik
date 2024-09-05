@@ -7,14 +7,12 @@
  *
  */
 
-#pragma once
-
 #include "kvik/logger.hpp"
 #include "kvik/node.hpp"
 #include "kvik/version.hpp"
 
 // Log tag
-static const char* KVIK_LOG_TAG = "Kvik/Node";
+static const char *KVIK_LOG_TAG = "Kvik/Node";
 
 namespace kvik
 {
