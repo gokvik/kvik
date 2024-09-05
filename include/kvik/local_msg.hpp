@@ -13,6 +13,7 @@
 #include <string>
 
 #include "kvik/local_addr.hpp"
+#include "kvik/node_types.hpp"
 
 namespace kvik
 {
@@ -86,6 +87,8 @@ namespace kvik
          * received message so that correct data rate can be chosen.
          */
         int rssi = MSG_RSSI_UNKNOWN;
+
+        NodeType nodeType = NodeType::UNKNOWN; //!< This node type
 
         bool operator==(const LocalMsg &other) const;
         bool operator!=(const LocalMsg &other) const;
