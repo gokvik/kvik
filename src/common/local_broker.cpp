@@ -27,26 +27,26 @@ namespace kvik
         KVIK_LOGD("Deinitialized");
     }
 
-    ErrCode LocalBroker::publish(const RemoteMsg &msg)
+    ErrCode LocalBroker::publish(const PubData &data)
     {
         KVIK_LOGD("Publishing %zu bytes to topic '%s'",
-                  msg.payload.length(), msg.topic.c_str());
+                  data.payload.length(), data.topic.c_str());
 
         // Check if node is subscribed to this topic
         bool subscribed;
         {
             const std::scoped_lock lock(m_mutex);
-            subscribed = !m_subs.find(msg.topic).empty();
+            subscribed = !m_subs.find(data.topic).empty();
         }
 
         if (subscribed && m_recvCb != nullptr)
         {
             KVIK_LOGD("Subscription exists for published data, calling "
                       "callback on topic '%s'",
-                      msg.topic.c_str());
+                      data.topic.c_str());
 
             // Send data back as received
-            KVIK_RETURN_ERROR(m_recvCb(msg));
+            KVIK_RETURN_ERROR(m_recvCb(data.toSubData()));
         }
 
         return ErrCode::SUCCESS;

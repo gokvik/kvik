@@ -12,6 +12,7 @@
 #include <functional>
 
 #include "kvik/errors.hpp"
+#include "kvik/pub_sub_struct.hpp"
 
 namespace kvik
 {
@@ -39,12 +40,6 @@ namespace kvik
     };
 
     /**
-     * @brief Subscribe callback type
-     */
-    using SubscribeCb = std::function<void(const std::string &topic,
-                                           const std::string &payload)>;
-
-    /**
      * @brief Interface for generic node type of Kvik
      */
     class INode
@@ -64,8 +59,24 @@ namespace kvik
          * @param payload Payload
          * @return Error code
          */
-        virtual ErrCode publish(const std::string &topic,
-                                const std::string &payload) = 0;
+        inline ErrCode publish(const std::string &topic,
+                               const std::string &payload)
+        {
+            return INode::publish({
+                .topic = topic,
+                .payload = payload,
+            });
+        }
+
+        /**
+         * @brief Publishes payload to topic
+         *
+         * More generic version of `publish(topic, payload)`.
+         *
+         * @param data Data to publish
+         * @return Error code
+         */
+        virtual ErrCode publish(const PubData &data) = 0;
 
         /**
          * @brief Subscribes to topic
@@ -76,7 +87,7 @@ namespace kvik
          * @param cb Callback function
          * @return Error code
          */
-        virtual ErrCode subscribe(const std::string &topic, SubscribeCb cb) = 0;
+        virtual ErrCode subscribe(const std::string &topic, SubCb cb) = 0;
 
         /**
          * @brief Unsubscribes from topic

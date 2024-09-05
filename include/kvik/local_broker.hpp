@@ -14,6 +14,7 @@
 
 #include "kvik/errors.hpp"
 #include "kvik/layers.hpp"
+#include "kvik/pub_sub_struct.hpp"
 #include "kvik/wildcard_trie.hpp"
 
 namespace kvik
@@ -26,8 +27,8 @@ namespace kvik
     class LocalBroker : public IRemoteLayer
     {
         std::mutex m_mutex;
-        kvik::WildcardTrie<bool> m_subs;  //!< Subscriptions
-        std::string m_topicPrefix;        //!< Topic prefix for publishing
+        kvik::WildcardTrie<bool> m_subs; //!< Subscriptions
+        std::string m_topicPrefix;       //!< Topic prefix for publishing
 
     public:
         /**
@@ -41,18 +42,18 @@ namespace kvik
         ~LocalBroker();
 
         /**
-         * @brief Publishes message coming from node
+         * @brief Publishes data coming from node
          *
          * Should be used by `INode` only!
          *
-         * If subscription for message's topic exists, immediately calls
-         * receive callback (from current thread).
+         * If subscription for topic exists, immediately calls receive
+         * callback (from current thread).
          *
-         * @param msg Message to publish
+         * @param data Data to publish
          * @return ErrCode::SUCCESS If no receive callback called.
          * @return Any error code returned by receive callback.
          */
-        ErrCode publish(const RemoteMsg &msg);
+        ErrCode publish(const PubData &data);
 
         /**
          * @brief Subscribes to given topic

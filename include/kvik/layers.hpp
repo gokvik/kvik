@@ -13,7 +13,7 @@
 
 #include "kvik/errors.hpp"
 #include "kvik/local_msg.hpp"
-#include "kvik/remote_msg.hpp"
+#include "kvik/pub_sub_struct.hpp"
 
 namespace kvik
 {
@@ -72,7 +72,7 @@ namespace kvik
     class IRemoteLayer
     {
     public:
-        using RecvCb = std::function<ErrCode(const RemoteMsg &)>;
+        using RecvCb = std::function<ErrCode(const SubData &)>;
         using ReconnectCb = std::function<ErrCode()>;
 
     protected:
@@ -85,10 +85,10 @@ namespace kvik
          *
          * Should be used by `INode` only!
          *
-         * @param msg Message to publish
+         * @param data Message to publish
          * @return Error code
          */
-        virtual ErrCode publish(const RemoteMsg &msg) = 0;
+        virtual ErrCode publish(const PubData &data) = 0;
 
         /**
          * @brief Subscribes to given topic
