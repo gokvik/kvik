@@ -26,8 +26,9 @@ namespace kvik
      */
     enum class ErrCode : uint_fast16_t
     {
-        SUCCESS = 0,
-        GENERIC_FAILURE = 1,
+        SUCCESS = 0x0,
+        GENERIC_FAILURE = 0x1,
+        NOT_FOUND = 0x10,
     };
 
 #define KVIK_STRINGIZE_INNER(x) #x
