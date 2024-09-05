@@ -9,12 +9,16 @@
 
 #pragma once
 
+#include <climits>
 #include <string>
 
 #include "kvik/local_addr.hpp"
 
 namespace kvik
 {
+    //! RSSI "unknown" value
+    static const int MSG_RSSI_UNKNOWN = INT_MIN;
+
     /**
      * @brief Local message types
      */
@@ -69,6 +73,18 @@ namespace kvik
         std::string topic = "";                                   //!< Topic of message
         std::string payload = "";                                 //!< Payload of message
         LocalMsgFailReason failReason = LocalMsgFailReason::NONE; //!< Fail reason
+
+        // Additional data
+        /**
+         * @brief RSSI corresponding to the message
+         *
+         * Only relevant for RF local layers.
+         *
+         * In case of received message contains it's RSSI,
+         * in case of to be sent message should contain RSSI of corresponding
+         * received message so that correct data rate can be chosen.
+         */
+        int rssi = MSG_RSSI_UNKNOWN;
 
         bool operator==(const LocalMsg &other) const;
         bool operator!=(const LocalMsg &other) const;
