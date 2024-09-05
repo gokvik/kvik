@@ -65,6 +65,7 @@ namespace kvik
                           ") ")
                     : "") +
                (!addr.empty() ? addr.toString() : "(no addr)") + " " +
+               (!relayedAddr.empty() ? relayedAddr.toString() : "(not relayed)") + " " +
                (!topic.empty() ? topic : "(no topic)") + " " +
                "(" + std::to_string(payload.length()) + " B payload)";
     }
@@ -73,6 +74,7 @@ namespace kvik
     {
         return type == other.type &&
                addr == other.addr &&
+               relayedAddr == other.relayedAddr &&
                topic == other.topic &&
                payload == other.payload &&
                failReason == other.failReason;

@@ -70,6 +70,7 @@ namespace kvik
     {
         LocalMsgType type = LocalMsgType::NONE;                   //!< Type of message
         LocalAddr addr = {};                                      //!< Source/destination address
+        LocalAddr relayedAddr = {};                               //!< Relayed address (processed by relay node)
         std::string topic = "";                                   //!< Topic of message
         std::string payload = "";                                 //!< Payload of message
         LocalMsgFailReason failReason = LocalMsgFailReason::NONE; //!< Fail reason
@@ -108,6 +109,7 @@ struct std::hash<kvik::LocalMsg>
     {
         return std::hash<kvik::LocalMsgType>{}(msg.type) +
                std::hash<kvik::LocalAddr>{}(msg.addr) +
+               std::hash<kvik::LocalAddr>{}(msg.relayedAddr) +
                std::hash<std::string>{}(msg.topic) +
                std::hash<std::string>{}(msg.payload) +
                std::hash<kvik::LocalMsgFailReason>{}(msg.failReason);

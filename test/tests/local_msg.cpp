@@ -26,6 +26,12 @@ TEST_CASE("Comparison", "[LocalMsg]")
         REQUIRE(msg1 != msg2);
     }
 
+    SECTION("Different relayed addresses")
+    {
+        msg2.relayedAddr.addr.push_back(0x01);
+        REQUIRE(msg1 != msg2);
+    }
+
     SECTION("Different topics")
     {
         msg2.topic = "1";
