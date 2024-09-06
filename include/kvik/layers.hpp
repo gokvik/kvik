@@ -34,7 +34,7 @@ namespace kvik
          *
          * Should be used by `INode` only!
          *
-         * In the message, empty address means send to the bridge peer.
+         * In the message, empty address means send to the gateway.
          *
          * @param msg Message
          * @return Error code
@@ -52,7 +52,7 @@ namespace kvik
     };
 
     /**
-     * @brief Interface for local layer that connects to bridge
+     * @brief Interface for local layer that connects to gateway
      */
     class IClientLocalLayer : virtual public ILocalLayer
     {
