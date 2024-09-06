@@ -1,3 +1,9 @@
+/**
+ * @file nonce_cache.cpp
+ * @author Dávid Benko (davidbenko@davidbenko.dev)
+ * @copyright Copyright (c) 2024
+ */
+
 #include <chrono>
 #include <thread>
 

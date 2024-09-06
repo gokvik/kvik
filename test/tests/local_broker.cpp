@@ -1,3 +1,9 @@
+/**
+ * @file local_broker.cpp
+ * @author Dávid Benko (davidbenko@davidbenko.dev)
+ * @copyright Copyright (c) 2024
+ */
+
 #include <chrono>
 #include <string>
 #include <thread>

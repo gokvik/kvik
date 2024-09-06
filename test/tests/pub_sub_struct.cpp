@@ -1,3 +1,9 @@
+/**
+ * @file pub_sub_struct.cpp
+ * @author Dávid Benko (davidbenko@davidbenko.dev)
+ * @copyright Copyright (c) 2024
+ */
+
 #include "kvik/pub_sub_struct.hpp"
 
 #include <catch2/catch_test_macros.hpp>

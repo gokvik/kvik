@@ -1,3 +1,9 @@
+/**
+ * @file local_addr_mac.cpp
+ * @author Dávid Benko (davidbenko@davidbenko.dev)
+ * @copyright Copyright (c) 2024
+ */
+
 #include <catch2/catch_test_macros.hpp>
 
 #include "kvik/local_addr_mac.hpp"
