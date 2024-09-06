@@ -1,7 +1,7 @@
-#include <catch2/catch_test_macros.hpp>
-
 #include <chrono>
 #include <future>
+
+#include <catch2/catch_test_macros.hpp>
 
 #include "kvik/timer.hpp"
 

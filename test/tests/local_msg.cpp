@@ -1,6 +1,6 @@
-#include <catch2/catch_test_macros.hpp>
-
 #include "kvik/local_msg.hpp"
+
+#include <catch2/catch_test_macros.hpp>
 
 using namespace kvik;
 

@@ -1,6 +1,6 @@
-#include <catch2/catch_test_macros.hpp>
-
 #include "kvik/pub_sub_struct.hpp"
+
+#include <catch2/catch_test_macros.hpp>
 
 using namespace kvik;
 

@@ -1,9 +1,9 @@
-#include <catch2/catch_test_macros.hpp>
-
 #include <chrono>
 #include <string>
 #include <thread>
 #include <vector>
+
+#include <catch2/catch_test_macros.hpp>
 
 #include "kvik/errors.hpp"
 #include "kvik/local_broker.hpp"
