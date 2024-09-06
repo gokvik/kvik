@@ -44,8 +44,9 @@ TEST_CASE("Comparison", "[LocalMsg]")
         REQUIRE(msg1 != msg2);
     }
 
-    // TODO: test this when another fail reason is implemented    
-    // SECTION("Different fail reasons")
-    // {
-    // }
+    SECTION("Different fail reasons")
+    {
+        msg2.failReason = LocalMsgFailReason::DUP_NONCE;
+        REQUIRE(msg1 != msg2);
+    }
 }

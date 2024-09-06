@@ -34,8 +34,6 @@ namespace kvik
         SUB_REQ = 0x30,
         SUB_DATA = 0x31,
         UNSUB = 0x32,
-        TIME_REQ = 0x40,
-        TIME_RES = 0x41,
     };
 
     /**
@@ -44,6 +42,8 @@ namespace kvik
     enum class LocalMsgFailReason : uint8_t
     {
         NONE = 0x00,
+        DUP_NONCE = 0x01,  //!< Duplicate nonce (i.e. replay attack protection)
+        INVALID_TS = 0x02, //!< Invalid timestamp (i.e. replay attack protection)
     };
 
     /**

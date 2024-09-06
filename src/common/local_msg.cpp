@@ -35,10 +35,6 @@ namespace kvik
             return "SUB_DATA";
         case LocalMsgType::UNSUB:
             return "UNSUB";
-        case LocalMsgType::TIME_REQ:
-            return "TIME_REQ";
-        case LocalMsgType::TIME_RES:
-            return "TIME_RES";
         default:
             return "???";
         }
@@ -50,6 +46,10 @@ namespace kvik
         {
         case LocalMsgFailReason::NONE:
             return "NONE";
+        case LocalMsgFailReason::DUP_NONCE:
+            return "DUP_NONCE";
+        case LocalMsgFailReason::INVALID_TS:
+            return "INVALID_TS";
         default:
             return "???";
         }
