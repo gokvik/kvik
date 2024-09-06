@@ -62,6 +62,7 @@ namespace kvik
          * @param levelSeparator Level separator
          * @param singleLevelWildcard Single-level wildcard token
          * @param multiLevelWildcard Multi-level wildcard token
+         * @throw kvik::Exception Duplicate or empty separator/wildcard
          */
         WildcardTrie(const std::string &levelSeparator = "/",
                      const std::string &singleLevelWildcard = "+",
