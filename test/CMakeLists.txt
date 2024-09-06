@@ -20,11 +20,12 @@ execute_process(
 include_directories(
   "../include"
   "../priv_include"
+  "include"
 )
 file(GLOB srcs CONFIGURE_DEPENDS
   "../src/common/*.cpp"
-  "../src/linux/logger.cpp"
-  "../src/testing/*.cpp"
+  "../src/linux/*.cpp"
+  "src/*.cpp"
   "tests/*.cpp"
 )
 add_executable(kvik_test ${srcs})
