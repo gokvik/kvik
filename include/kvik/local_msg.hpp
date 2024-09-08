@@ -10,6 +10,7 @@
 #pragma once
 
 #include <climits>
+#include <cstdint>
 #include <string>
 
 #include "kvik/local_addr.hpp"
@@ -18,7 +19,7 @@
 namespace kvik
 {
     //! RSSI "unknown" value
-    static const int MSG_RSSI_UNKNOWN = INT_MIN;
+    constexpr int16_t MSG_RSSI_UNKNOWN = INT16_MIN;
 
     /**
      * @brief Local message types
@@ -69,14 +70,16 @@ namespace kvik
      */
     struct LocalMsg
     {
-        LocalMsgType type = LocalMsgType::NONE;                   //!< Type of message
-        LocalAddr addr = {};                                      //!< Source/destination address
-        LocalAddr relayedAddr = {};                               //!< Relayed address (processed by relay node)
-        std::string topic = "";                                   //!< Topic of message
-        std::string payload = "";                                 //!< Payload of message
-        LocalMsgFailReason failReason = LocalMsgFailReason::NONE; //!< Fail reason
+        LocalMsgType type = LocalMsgType::NONE; //!< Type of message
+        LocalAddr addr = {};                    //!< Source/destination address
+        LocalAddr relayedAddr = {};             //!< Relayed address (processed by relay node)
+        std::string topic = "";                 //!< Topic of message
+        std::string payload = "";               //!< Payload of message
 
         // Additional data
+        NodeType nodeType = NodeType::UNKNOWN;                    //!< This node type
+        LocalMsgFailReason failReason = LocalMsgFailReason::NONE; //!< Fail reason
+
         /**
          * @brief RSSI corresponding to the message
          *
@@ -86,9 +89,10 @@ namespace kvik
          * in case of to be sent message should contain RSSI of corresponding
          * received message so that correct data rate can be chosen.
          */
-        int rssi = MSG_RSSI_UNKNOWN;
+        int16_t rssi = MSG_RSSI_UNKNOWN;
 
-        NodeType nodeType = NodeType::UNKNOWN; //!< This node type
+        uint16_t ts = 0;    //!< Timestamp (in configured units)
+        uint16_t nonce = 0; //!< Nonce
 
         bool operator==(const LocalMsg &other) const;
         bool operator!=(const LocalMsg &other) const;
@@ -114,7 +118,6 @@ struct std::hash<kvik::LocalMsg>
                std::hash<kvik::LocalAddr>{}(msg.addr) +
                std::hash<kvik::LocalAddr>{}(msg.relayedAddr) +
                std::hash<std::string>{}(msg.topic) +
-               std::hash<std::string>{}(msg.payload) +
-               std::hash<kvik::LocalMsgFailReason>{}(msg.failReason);
+               std::hash<std::string>{}(msg.payload);
     }
 };

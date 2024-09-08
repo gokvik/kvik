@@ -52,7 +52,8 @@ TEST_CASE("Comparison", "[LocalMsg]")
 
     SECTION("Different fail reasons")
     {
+        // Just additional data, no difference in comparison
         msg2.failReason = LocalMsgFailReason::DUP_NONCE;
-        REQUIRE(msg1 != msg2);
+        REQUIRE(msg1 == msg2);
     }
 }
