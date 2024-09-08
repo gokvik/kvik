@@ -34,8 +34,6 @@ namespace kvik
          *
          * Should be used by `INode` only!
          *
-         * In the message, empty address means send to the gateway.
-         *
          * @param msg Message
          * @return Error code
          */
