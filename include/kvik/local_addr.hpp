@@ -43,7 +43,7 @@ namespace kvik
          * @return true Local address is empty
          * @return false Local address is not empty
          */
-        inline bool empty() const
+        bool empty() const
         {
             return addr.empty();
         }
