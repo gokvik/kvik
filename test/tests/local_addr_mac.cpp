@@ -54,3 +54,14 @@ TEST_CASE("String representation", "[LocalAddrMAC]")
     uint8_t mac[] = {0x00, 0x11, 0x23, 0x00, 0x55, 0xFF};
     REQUIRE(LocalAddrMAC(mac).toString() == "0011230055ff");
 }
+
+TEST_CASE("To bytes", "[LocalAddrMAC]")
+{
+    uint8_t mac[] = {0x00, 0x11, 0x23, 0x00, 0x55, 0xFF};
+    uint8_t mac2[6];
+    LocalAddrMAC(mac).toBytes(mac2);
+    for (size_t i = 0; i < 6; i++)
+    {
+        CHECK(mac[i] == mac2[i]);
+    }
+}

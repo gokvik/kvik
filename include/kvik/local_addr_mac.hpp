@@ -47,7 +47,7 @@ namespace kvik
          *
          * @param mac MAC address storage pointer
          */
-        void toMAC(uint8_t *mac) const;
+        void toBytes(uint8_t *mac) const;
     };
 }
 

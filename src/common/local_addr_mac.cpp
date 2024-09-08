@@ -43,7 +43,7 @@ namespace kvik
         return LocalAddrMAC(mac);
     }
 
-    void LocalAddrMAC::toMAC(uint8_t *mac) const
+    void LocalAddrMAC::toBytes(uint8_t *mac) const
     {
         for (unsigned i = 0; i < addr.size(); i++)
         {
