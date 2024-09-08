@@ -73,8 +73,12 @@ namespace kvik
         inline const RetainedLocalPeer retain() const
         {
             RetainedLocalPeer rlp;
-            std::copy_n(addr.addr.begin(), rlp.addr.max_size(), rlp.addr.begin());
-            rlp.addrLen = addr.addr.size();
+
+            // Copy address (at most 32 bytes of address)
+            uint8_t sizeToCopy = std::min(addr.addr.size(), rlp.addr.max_size());
+            std::copy_n(addr.addr.begin(), sizeToCopy, rlp.addr.begin());
+
+            rlp.addrLen = sizeToCopy;
             rlp.channel = channel;
             return rlp;
         }
