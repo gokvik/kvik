@@ -74,6 +74,20 @@ namespace kvik
      * @brief Subscribe callback type
      */
     using SubCb = std::function<void(const SubData &data)>;
+
+    /**
+     * @brief Subscription request
+     *
+     * Used in node's `subscribe*()` calls.
+     */
+    struct SubReq
+    {
+        std::string topic = "";
+        SubCb cb = nullptr;
+
+        bool operator==(const SubReq &other) const;
+        bool operator!=(const SubReq &other) const;
+    };
 } // namespace kvik
 
 // Define hasher function
@@ -95,5 +109,15 @@ struct std::hash<kvik::SubData>
     {
         return std::hash<std::string>{}(data.topic) +
                std::hash<std::string>{}(data.payload);
+    }
+};
+
+// Define hasher function
+template <>
+struct std::hash<kvik::SubReq>
+{
+    std::size_t operator()(kvik::SubReq const &sub) const noexcept
+    {
+        return std::hash<std::string>{}(sub.topic);
     }
 };

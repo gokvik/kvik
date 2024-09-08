@@ -68,3 +68,27 @@ TEST_CASE("Conversion of PubData to SubData", "[PubData]")
     };
     REQUIRE(subDataCorrect == pubData.toSubData());
 }
+
+TEST_CASE("Comparison", "[SubReq]")
+{
+    SubReq req1;
+    SubReq req2;
+
+    SECTION("Equality")
+    {
+        REQUIRE(req1 == req2);
+    }
+
+    SECTION("Different topics")
+    {
+        req2.topic = "1";
+        REQUIRE(req1 != req2);
+    }
+
+    SECTION("Different callbacks")
+    {
+        // Treated as additional data
+        req2.cb = [](const SubData &data) {};
+        REQUIRE(req1 == req2);
+    }
+}

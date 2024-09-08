@@ -54,4 +54,14 @@ namespace kvik
         return (!topic.empty() ? topic : "(no topic)") + " " +
                "(" + std::to_string(payload.length()) + " B payload)";
     }
+
+    bool SubReq::operator==(const SubReq &other) const
+    {
+        return topic == other.topic;
+    }
+
+    bool SubReq::operator!=(const SubReq &other) const
+    {
+        return !this->operator==(other);
+    }
 } // namespace kvik
