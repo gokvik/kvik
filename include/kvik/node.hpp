@@ -50,8 +50,8 @@ namespace kvik
          * @param payload Payload
          * @return Error code
          */
-        inline ErrCode publish(const std::string &topic,
-                               const std::string &payload)
+        ErrCode publish(const std::string &topic,
+                        const std::string &payload)
         {
             return this->publish({
                 .topic = topic,
@@ -67,7 +67,7 @@ namespace kvik
          * @param data Data to publish
          * @return Error code
          */
-        inline ErrCode publish(const PubData &data)
+        ErrCode publish(const PubData &data)
         {
             return this->publishBulk({data});
         }
@@ -77,7 +77,7 @@ namespace kvik
          * @param pubs Vector of data to publish
          * @return Error code
          */
-        inline ErrCode publishBulk(const std::vector<PubData> &pubs)
+        ErrCode publishBulk(const std::vector<PubData> &pubs)
         {
             return this->pubSubBulk(pubs, {});
         }
@@ -91,7 +91,7 @@ namespace kvik
          * @param cb Callback function
          * @return Error code
          */
-        inline ErrCode subscribe(const std::string &topic, SubCb cb)
+        ErrCode subscribe(const std::string &topic, SubCb cb)
         {
             return this->subscribeBulk({{topic, cb}});
         }
@@ -101,7 +101,7 @@ namespace kvik
          * @param subs Vector of subscription requests
          * @return Error code
          */
-        inline ErrCode subscribeBulk(const std::vector<SubReq> &subs)
+        ErrCode subscribeBulk(const std::vector<SubReq> &subs)
         {
             return this->pubSubBulk({}, subs);
         }
@@ -128,7 +128,7 @@ namespace kvik
          * @param topic Topic
          * @return Error code
          */
-        inline ErrCode unsubscribe(const std::string &topic)
+        ErrCode unsubscribe(const std::string &topic)
         {
             return this->unsubscribeBulk({topic});
         }
