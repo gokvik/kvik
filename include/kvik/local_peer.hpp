@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <array>
 #include <cstdint>
 
@@ -39,6 +38,16 @@ namespace kvik
         LocalAddr addr = {};  //!< Peer address
         uint16_t channel = 0; //!< Wireless channel (only for wireless local layers)
 
+        /**
+         * @brief Peer preference (weight)
+         *
+         * Used for gateway selection.
+         * Local layer specific, thus not comparable between different local
+         * layers.
+         * Higher value means higher preference.
+         */
+        int16_t pref = 0;
+
         bool operator==(const LocalPeer &other) const
         {
             return addr == other.addr;
@@ -49,7 +58,19 @@ namespace kvik
             return !this->operator==(other);
         }
 
-        inline bool empty() const
+        // Based on preference
+        bool operator<(const LocalPeer &other) const
+        {
+            return pref < other.pref;
+        }
+
+        // Based on preference
+        bool operator>(const LocalPeer &other) const
+        {
+            return pref > other.pref;
+        }
+
+        bool empty() const
         {
             return addr.empty();
         }
@@ -58,10 +79,7 @@ namespace kvik
          * @brief Converts internal representation into printable string
          * @return Printable string representation
          */
-        inline std::string toString() const
-        {
-            return addr.toString();
-        }
+        std::string toString() const;
 
         /**
          * @brief Converts `LocalPeer` to `RetainedLocalPeer`
@@ -70,18 +88,7 @@ namespace kvik
          *
          * @return Retained local peer info
          */
-        inline const RetainedLocalPeer retain() const
-        {
-            RetainedLocalPeer rlp;
-
-            // Copy address (at most 32 bytes of address)
-            uint8_t sizeToCopy = std::min(addr.addr.size(), rlp.addr.max_size());
-            std::copy_n(addr.addr.begin(), sizeToCopy, rlp.addr.begin());
-
-            rlp.addrLen = sizeToCopy;
-            rlp.channel = channel;
-            return rlp;
-        }
+        const RetainedLocalPeer retain() const;
     };
 }
 

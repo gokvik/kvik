@@ -17,20 +17,46 @@ TEST_CASE("Comparison", "[LocalPeer]")
 
     SECTION("Equality")
     {
-        REQUIRE(peer1 == peer2);
+        CHECK(peer1 == peer2);
+        CHECK_FALSE(peer1 < peer2);
+        CHECK_FALSE(peer1 > peer2);
     }
 
     SECTION("Different address")
     {
         peer2.addr.addr.push_back(0x01);
-        REQUIRE(peer1 != peer2);
+        CHECK(peer1 != peer2);
+        CHECK_FALSE(peer1 < peer2);
+        CHECK_FALSE(peer1 > peer2);
     }
 
     SECTION("Different channel")
     {
         // Treated as additional data
         peer2.channel = 1;
-        REQUIRE(peer1 == peer2);
+        CHECK(peer1 == peer2);
+        CHECK_FALSE(peer1 < peer2);
+        CHECK_FALSE(peer1 > peer2);
+    }
+
+    SECTION("Less preference")
+    {
+        // Treated as additional data
+        peer1.pref = 0;
+        peer2.pref = 100;
+        CHECK(peer1 == peer2);
+        CHECK(peer1 < peer2);
+        CHECK_FALSE(peer1 > peer2);
+    }
+
+    SECTION("Greater preference")
+    {
+        // Treated as additional data
+        peer1.pref = 100;
+        peer2.pref = 0;
+        CHECK(peer1 == peer2);
+        CHECK_FALSE(peer1 < peer2);
+        CHECK(peer1 > peer2);
     }
 }
 
@@ -86,13 +112,15 @@ TEST_CASE("Retain super long address", "[LocalPeer]")
         .channel = 100,
     };
 
-    for (size_t i = 0; i < 3 * maxRetainedAddrSize; i++) {
+    for (size_t i = 0; i < 3 * maxRetainedAddrSize; i++)
+    {
         peer.addr.addr.push_back(0x01);
     }
 
     RetainedLocalPeer retainedPeer = peer.retain();
 
-    for (size_t i = 0; i < maxRetainedAddrSize; i++) {
+    for (size_t i = 0; i < maxRetainedAddrSize; i++)
+    {
         REQUIRE(retainedPeer.addr[i] == 0x01);
     }
     REQUIRE(retainedPeer.addrLen == maxRetainedAddrSize);
