@@ -48,7 +48,7 @@ namespace kvik
          *
          * @param topic Topic
          * @param payload Payload
-         * @return Error code
+         * @return Error code (node-specific)
          */
         ErrCode publish(const std::string &topic,
                         const std::string &payload)
@@ -65,7 +65,7 @@ namespace kvik
          * More generic version of `publish(topic, payload)`.
          *
          * @param data Data to publish
-         * @return Error code
+         * @return Error code (node-specific)
          */
         ErrCode publish(const PubData &data)
         {
@@ -75,7 +75,7 @@ namespace kvik
         /**
          * @brief Publishes data in bulk
          * @param pubs Vector of data to publish
-         * @return Error code
+         * @return Error code (node-specific)
          */
         ErrCode publishBulk(const std::vector<PubData> &pubs)
         {
@@ -89,7 +89,7 @@ namespace kvik
          *
          * @param topic Topic
          * @param cb Callback function
-         * @return Error code
+         * @return Error code (node-specific)
          */
         ErrCode subscribe(const std::string &topic, SubCb cb)
         {
@@ -99,7 +99,7 @@ namespace kvik
         /**
          * @brief Subscribes to topics in bulk
          * @param subs Vector of subscription requests
-         * @return Error code
+         * @return Error code (node-specific)
          */
         ErrCode subscribeBulk(const std::vector<SubReq> &subs)
         {
@@ -115,7 +115,7 @@ namespace kvik
          *
          * @param pubs Vector of data to publish
          * @param subs Vector of subscription requests
-         * @return Error code
+         * @return Error code (node-specific)
          */
         virtual ErrCode pubSubBulk(const std::vector<PubData> &pubs,
                                    const std::vector<SubReq> &subs) = 0;
@@ -126,7 +126,7 @@ namespace kvik
          * This is primary endpoint for unsubscribing locally on all node types.
          *
          * @param topic Topic
-         * @return Error code
+         * @return Error code (node-specific)
          */
         ErrCode unsubscribe(const std::string &topic)
         {
@@ -136,19 +136,19 @@ namespace kvik
         /**
          * @brief Unsubscribes from topics in bulk
          * @param topics Topics
-         * @return Error code
+         * @return Error code (node-specific)
          */
         virtual ErrCode unsubscribeBulk(const std::vector<std::string> &topics) = 0;
 
         /**
          * @brief Unsubscribes from all topics
-         * @return Error code
+         * @return Error code (node-specific)
          */
         virtual ErrCode unsubscribeAll() = 0;
 
         /**
          * @brief Resubscribes to all topics
-         * @return Error code
+         * @return Error code (node-specific)
          */
         virtual ErrCode resubscribeAll() = 0;
 
