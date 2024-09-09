@@ -50,8 +50,8 @@ namespace kvik
          * callback (from current thread).
          *
          * @param data Data to publish
-         * @return ErrCode::SUCCESS If no receive callback called.
-         * @return Any error code returned by receive callback.
+         * @retval SUCCESS No error from receive callback
+         * @retval * Any error code returned by receive callback
          */
         ErrCode publish(const PubData &data);
 
@@ -61,7 +61,7 @@ namespace kvik
          * Should be used by `INode` only!
          *
          * @param topic Topic
-         * @return ErrCode::SUCCESS Always
+         * @retval SUCCESS Always
          */
         ErrCode subscribe(const std::string &topic);
 
@@ -71,8 +71,8 @@ namespace kvik
          * Should be used by `INode` only!
          *
          * @param topic Topic
-         * @return ErrCode::SUCCESS Entry removed
-         * @return ErrCode::NOT_FOUND Entry doesn't exist
+         * @retval SUCCESS Entry removed
+         * @retval NOT_FOUND Entry doesn't exist
          */
         ErrCode unsubscribe(const std::string &topic);
     };
