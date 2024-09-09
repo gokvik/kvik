@@ -36,6 +36,12 @@ namespace kvik
         m_thread.join();
     }
 
+    void Timer::setNextExec(const std::chrono::steady_clock::time_point &tp)
+    {
+        const std::scoped_lock lock{m_mutex};
+        m_nextExec = tp;
+    }
+
     void Timer::handlerThread()
     {
         while (true)
@@ -51,10 +57,12 @@ namespace kvik
                 }
             }
 
+            // Schedule next execution
+            // May be overriden by callback itself
+            m_nextExec += m_interval;
+
             // Call callback
             m_cb();
-
-            m_nextExec += m_interval;
         }
     }
 }

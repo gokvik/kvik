@@ -22,7 +22,6 @@ namespace kvik
      * @brief Simple timer for Kvik purposes
      *
      * (... but you can also use it outside of Kvik.)
-     *
      */
     class Timer
     {
@@ -52,6 +51,18 @@ namespace kvik
          *
          */
         ~Timer();
+
+        /**
+         * @brief Overrides next execution time
+         *
+         * Should be called from callback.
+         *
+         * After execution at specified time point, timer continues normally
+         * with interval configured in constructor.
+         *
+         * @param tp Next execution time point
+         */
+        void setNextExec(const std::chrono::steady_clock::time_point &tp);
 
     protected:
         /**
