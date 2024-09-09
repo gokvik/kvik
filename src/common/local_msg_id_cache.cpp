@@ -1,7 +1,7 @@
 /**
- * @file nonce_cache.cpp
+ * @file local_msg_id_cache.cpp
  * @author Dávid Benko (davidbenko@davidbenko.dev)
- * @brief Nonce cache
+ * @brief Message ID cache
  *
  * @copyright Copyright (c) 2024
  *
@@ -12,36 +12,37 @@
 
 #include "kvik/errors.hpp"
 #include "kvik/local_addr.hpp"
-#include "kvik/nonce_cache.hpp"
+#include "kvik/local_msg_id_cache.hpp"
 #include "kvik/timer.hpp"
 
 namespace kvik
 {
-    NonceCache::NonceCache(std::chrono::milliseconds timeUnit, uint8_t maxAge)
+    LocalMsgIdCache::LocalMsgIdCache(std::chrono::milliseconds timeUnit,
+                                     uint8_t maxAge)
         : m_timeUnit{timeUnit}, m_maxAge{maxAge},
-          m_timer{m_timeUnit, std::bind(&NonceCache::tick, this)}
+          m_timer{m_timeUnit, std::bind(&LocalMsgIdCache::tick, this)}
     {
     }
 
-    bool NonceCache::insert(const LocalAddr &addr, uint16_t nonce)
+    bool LocalMsgIdCache::insert(const LocalAddr &addr, uint16_t id)
     {
         // Expiration
         auto expTickNum = m_tickNum + m_maxAge + 1;
 
-        // Search in all address' sets for `nonce`
-        for (const auto &[_, nonceSet] : m_cache[addr])
+        // Search in all address' sets for `id`
+        for (const auto &[_, idSet] : m_cache[addr])
         {
-            if (nonceSet.find(nonce) != nonceSet.end())
+            if (idSet.find(id) != idSet.end())
             {
                 return false;
             }
         }
 
-        m_cache[addr][expTickNum].insert(nonce);
+        m_cache[addr][expTickNum].insert(id);
         return true;
     }
 
-    void NonceCache::tick()
+    void LocalMsgIdCache::tick()
     {
         m_tickNum++;
 

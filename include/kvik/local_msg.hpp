@@ -43,7 +43,7 @@ namespace kvik
     enum class LocalMsgFailReason : uint8_t
     {
         NONE = 0x00,              //!< No/unknown failure
-        DUP_NONCE = 0x01,         //!< Duplicate nonce (i.e. replay attack protection)
+        DUP_ID = 0x01,            //!< Duplicate message ID (i.e. replay attack protection, deduplication)
         INVALID_TS = 0x02,        //!< Invalid timestamp (i.e. replay attack protection)
         MALFORMED = 0x03,         //!< Malformed message (invalid length, checksum, parameters, etc.)
         PROCESSING_FAILED = 0x04, //!< Processing (transmission over remote layer, relaying, etc.) has failed
@@ -77,10 +77,12 @@ namespace kvik
         LocalAddr relayedAddr = {};             //!< Relayed address (processed by relay node)
         std::string topic = "";                 //!< Topic of message
         std::string payload = "";               //!< Payload of message
+        uint16_t id = 0;                        //!< Message ID
 
         // Additional data
         NodeType nodeType = NodeType::UNKNOWN;                    //!< This node type
         LocalMsgFailReason failReason = LocalMsgFailReason::NONE; //!< Fail reason
+        uint16_t ts = 0;                                          //!< Timestamp (in configured units)
 
         /**
          * @brief RSSI corresponding to the message
@@ -92,9 +94,6 @@ namespace kvik
          * received message so that correct data rate can be chosen.
          */
         int16_t rssi = MSG_RSSI_UNKNOWN;
-
-        uint16_t ts = 0;    //!< Timestamp (in configured units)
-        uint16_t nonce = 0; //!< Nonce
 
         bool operator==(const LocalMsg &other) const;
         bool operator!=(const LocalMsg &other) const;
@@ -120,6 +119,7 @@ struct std::hash<kvik::LocalMsg>
                std::hash<kvik::LocalAddr>{}(msg.addr) +
                std::hash<kvik::LocalAddr>{}(msg.relayedAddr) +
                std::hash<std::string>{}(msg.topic) +
-               std::hash<std::string>{}(msg.payload);
+               std::hash<std::string>{}(msg.payload) +
+               std::hash<uint16_t>{}(msg.id);
     }
 };

@@ -34,9 +34,9 @@ namespace kvik
         size_t unsubAllCnt = 0; //!< Counter of unsub all requests
         size_t resubAllCnt = 0; //!< Counter of resub all requests
 
-        using INode::getNonce;
+        using INode::getMsgId;
         using INode::INode;
-        using INode::validateNonce;
+        using INode::validateMsgId;
 
         ErrCode pubSubBulk(const std::vector<PubData> &newPubs,
                            const std::vector<SubReq> &newSubs)

@@ -20,10 +20,10 @@ namespace kvik
 {
     INode::INode(const NodeConfig &conf)
         : m_nodeConf{conf},
-          m_nonceCache{conf.nonceCache.timeUnit, conf.nonceCache.maxAge}
+          m_msgIdCache{conf.msgIdCache.timeUnit, conf.msgIdCache.maxAge}
     {
-        // Init nonce
-        getRandomBytes(&m_nonce, sizeof(m_nonce));
+        // Init message ID
+        getRandomBytes(&m_msgId, sizeof(m_msgId));
 
         if (!VERSION_UNKNOWN)
         {
@@ -35,13 +35,13 @@ namespace kvik
     {
     }
 
-    uint16_t INode::getNonce()
+    uint16_t INode::getMsgId()
     {
-        return m_nonce++;
+        return m_msgId++;
     }
 
-    bool INode::validateNonce(const LocalAddr &addr, uint16_t nonce)
+    bool INode::validateMsgId(const LocalAddr &addr, uint16_t id)
     {
-        return m_nonceCache.insert(addr, nonce);
+        return m_msgIdCache.insert(addr, id);
     }
 } // namespace kvik

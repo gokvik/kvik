@@ -100,32 +100,32 @@ TEST_CASE("Resubscribe all", "[Node]")
     REQUIRE(node.resubAllCnt == 1);
 }
 
-TEST_CASE("Get nonce", "[Node]")
+TEST_CASE("Get message ID", "[Node]")
 {
     constexpr size_t rounds = 50;
 
     DummyNode node(DEFAULT_CONFIG);
-    std::unordered_set<uint16_t> nonces;
+    std::unordered_set<uint16_t> msgIds;
 
     for (size_t i = 0; i < rounds; i++)
     {
-        nonces.insert(node.getNonce());
+        msgIds.insert(node.getMsgId());
     }
 
     // At least one of 1 and 2 is not present
     // (Should detect missing seeding with 0.)
-    CHECK((nonces.find(1) == nonces.end() || nonces.find(2) == nonces.end()));
+    CHECK((msgIds.find(1) == msgIds.end() || msgIds.find(2) == msgIds.end()));
 
     // One duplicate as reserve
-    CHECK(nonces.size() >= rounds - 1);
+    CHECK(msgIds.size() >= rounds - 1);
 }
 
-TEST_CASE("Validate peer nonce", "[Node]")
+TEST_CASE("Validate peer message ID", "[Node]")
 {
     DummyNode node(DEFAULT_CONFIG);
-    REQUIRE(node.validateNonce(LocalAddr(), 1));
-    REQUIRE(node.validateNonce(LocalAddr(), 2));
-    REQUIRE_FALSE(node.validateNonce(LocalAddr(), 1));
-    REQUIRE(node.validateNonce(LocalAddr({{0x01}}), 1));
-    REQUIRE_FALSE(node.validateNonce(LocalAddr({{0x01}}), 1));
+    REQUIRE(node.validateMsgId(LocalAddr(), 1));
+    REQUIRE(node.validateMsgId(LocalAddr(), 2));
+    REQUIRE_FALSE(node.validateMsgId(LocalAddr(), 1));
+    REQUIRE(node.validateMsgId(LocalAddr({{0x01}}), 1));
+    REQUIRE_FALSE(node.validateMsgId(LocalAddr({{0x01}}), 1));
 }

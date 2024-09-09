@@ -30,15 +30,16 @@ namespace kvik
             std::chrono::milliseconds respTimeout = std::chrono::milliseconds(500);
         };
 
-        struct NonceCache
+        struct MsgIdCache
         {
             /**
-             * @brief Interval of checking expiration times of nonce cache entries
+             * @brief Interval of checking expiration times of message ID
+             * cache entries
              *
              * Must be low enough to keep cache size low.
              * Must be high enough that standard time drifts (+ transmission
              * delays) don't cause false positive duplicates (see
-             * `nonceCacheMaxAge`).
+             * `maxAge`).
              *
              * This is also used as unit for replay protection timestamps
              * inside messages. For this reason it has to be the SAME VALUE
@@ -47,15 +48,14 @@ namespace kvik
             std::chrono::milliseconds timeUnit = std::chrono::milliseconds(500);
 
             /**
-             * @brief Max age of cache entries as multiply of `nonceCacheTimeUnit`
+             * @brief Max age of cache entries as multiply of `timeUnit`
              *
-             * Each entry in nonce cache has lifetime between
-             * `(nonceCacheMaxAge) * nonceCacheTimeUnit` and
-             * `(nonceCacheMaxAge + 1) * nonceCacheTimeUnit`.
-             * Product `(nonceCacheMaxAge - 1) * nonceCacheTimeUnit` represents
-             * maximum accepted time drift for a message.
+             * Each entry in message ID cache has lifetime between
+             * `(maxAge) * timeUnit` and `(maxAge + 1) * timeUnit`.
+             * Product `(maxAge - 1) * timeUnit` represents  maximum accepted
+             * time drift for a message.
              *
-             * Thus, by default, nonce cache entry has lifetime of between
+             * Thus, by default, message ID cache entry has lifetime of between
              * 1.5 and 2 seconds, and maximum time drift of received message is
              * 1 second.
              */
@@ -76,7 +76,7 @@ namespace kvik
         };
 
         LocalDelivery localDelivery;
-        NonceCache nonceCache;
+        MsgIdCache msgIdCache;
         Reporting reporting;
         TopicSeparators topicSep;
     };

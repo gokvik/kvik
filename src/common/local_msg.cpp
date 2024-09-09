@@ -46,8 +46,8 @@ namespace kvik
         {
         case LocalMsgFailReason::NONE:
             return "NONE";
-        case LocalMsgFailReason::DUP_NONCE:
-            return "DUP_NONCE";
+        case LocalMsgFailReason::DUP_ID:
+            return "DUP_ID";
         case LocalMsgFailReason::INVALID_TS:
             return "INVALID_TS";
         case LocalMsgFailReason::MALFORMED:
@@ -80,7 +80,8 @@ namespace kvik
                addr == other.addr &&
                relayedAddr == other.relayedAddr &&
                topic == other.topic &&
-               payload == other.payload;
+               payload == other.payload &&
+               id == other.id;
     }
 
     bool LocalMsg::operator!=(const LocalMsg &other) const

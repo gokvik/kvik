@@ -15,7 +15,7 @@
 #include "kvik/errors.hpp"
 #include "kvik/local_addr.hpp"
 #include "kvik/node_config.hpp"
-#include "kvik/nonce_cache.hpp"
+#include "kvik/local_msg_id_cache.hpp"
 #include "kvik/pub_sub_struct.hpp"
 
 namespace kvik
@@ -26,8 +26,8 @@ namespace kvik
     class INode
     {
         const NodeConfig &m_nodeConf;
-        uint16_t m_nonce;
-        NonceCache m_nonceCache;
+        uint16_t m_msgId;
+        LocalMsgIdCache m_msgIdCache;
 
     public:
         /**
@@ -154,26 +154,26 @@ namespace kvik
 
     protected:
         /**
-         * @brief Generates new nonce for a local message transmission
+         * @brief Generates new message ID for a local message transmission
          *
          * Implemented as random initial value and incrementation on each call.
          *
          * Not multithread safe.
          *
-         * @return Nonce
+         * @return Message ID
          */
-        uint16_t getNonce();
+        uint16_t getMsgId();
 
         /**
-         * @brief Validates received nonce
+         * @brief Validates received message ID
          *
          * Not multithread safe.
          *
          * @param addr Source peer address
-         * @param nonce Nonce
-         * @return true Nonce is valid (not duplicate)
-         * @return false Nonce is invalid (duplicate)
+         * @param id Message ID
+         * @retval true Message ID is valid (not duplicate)
+         * @retval false Message ID is invalid (duplicate)
          */
-        bool validateNonce(const LocalAddr &addr, uint16_t nonce);
+        bool validateMsgId(const LocalAddr &addr, uint16_t id);
     };
 } // namespace kvik
