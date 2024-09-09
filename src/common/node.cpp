@@ -20,8 +20,7 @@ namespace kvik
 {
     INode::INode(const NodeConfig &conf)
         : m_nodeConf{conf},
-          m_nonceCache{conf.replayProtection.nonceCacheTimeUnit,
-                       conf.replayProtection.nonceCacheMaxAge}
+          m_nonceCache{conf.nonceCache.timeUnit, conf.nonceCache.maxAge}
     {
         // Init nonce
         getRandomBytes(&m_nonce, sizeof(m_nonce));
