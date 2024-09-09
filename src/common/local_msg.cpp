@@ -50,6 +50,10 @@ namespace kvik
             return "DUP_NONCE";
         case LocalMsgFailReason::INVALID_TS:
             return "INVALID_TS";
+        case LocalMsgFailReason::MALFORMED:
+            return "MALFORMED";
+        case LocalMsgFailReason::PROCESSING_FAILED:
+            return "PROCESSING_FAILED";
         default:
             return "???";
         }

@@ -42,9 +42,11 @@ namespace kvik
      */
     enum class LocalMsgFailReason : uint8_t
     {
-        NONE = 0x00,
-        DUP_NONCE = 0x01,  //!< Duplicate nonce (i.e. replay attack protection)
-        INVALID_TS = 0x02, //!< Invalid timestamp (i.e. replay attack protection)
+        NONE = 0x00,              //!< No/unknown failure
+        DUP_NONCE = 0x01,         //!< Duplicate nonce (i.e. replay attack protection)
+        INVALID_TS = 0x02,        //!< Invalid timestamp (i.e. replay attack protection)
+        MALFORMED = 0x03,         //!< Malformed message (invalid length, checksum, parameters, etc.)
+        PROCESSING_FAILED = 0x04, //!< Processing (transmission over remote layer, relaying, etc.) has failed
     };
 
     /**
