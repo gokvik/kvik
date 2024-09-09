@@ -28,7 +28,16 @@ namespace kvik
     {
         SUCCESS = 0x0,
         GENERIC_FAILURE = 0x1,
-        NOT_FOUND = 0x10,
+
+        INVALID_ARG = 0x10,
+        INVALID_SIZE = 0x11,
+        NOT_FOUND = 0x12,
+        NOT_SUPPORTED = 0x13,
+        TIMEOUT = 0x14,
+
+        // Error codes corresponding to `LocalMsgFailReason`
+        MSG_MALFORMED = 0x103,
+        MSG_PROCESSING_FAILED = 0x104,
     };
 
 #define KVIK_STRINGIZE_INNER(x) #x
