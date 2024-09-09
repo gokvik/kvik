@@ -50,20 +50,6 @@ namespace kvik
     };
 
     /**
-     * @brief Interface for local layer that connects to gateway
-     */
-    class IClientLocalLayer : virtual public ILocalLayer
-    {
-    };
-
-    /**
-     * @brief Interface for local layer that serves clients
-     */
-    class IServingLocalLayer : virtual public ILocalLayer
-    {
-    };
-
-    /**
      * @brief Interface for remote layer
      *
      */
