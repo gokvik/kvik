@@ -10,6 +10,7 @@
 #pragma once
 
 #include <array>
+#include <chrono>
 #include <cstdint>
 
 #include "kvik/local_addr.hpp"
@@ -59,11 +60,14 @@ namespace kvik
         int16_t pref = 0;
 
         /**
-         * @brief Gateway timestamp in milliseconds since epoch
+         * @brief Gateway time difference
          *
          * Used for time synchronization.
+         *
+         * Calculated as gateway's timestamp in PROBE_RES minus local steady
+         * clock time.
          */
-        uint64_t ts = 0;
+        std::chrono::milliseconds tsDiff = std::chrono::milliseconds(0);
 
         bool operator==(const LocalPeer &other) const
         {

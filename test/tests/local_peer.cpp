@@ -4,11 +4,14 @@
  * @copyright Copyright (c) 2024
  */
 
-#include "kvik/local_peer.hpp"
+#include <chrono>
 
 #include <catch2/catch_test_macros.hpp>
 
+#include "kvik/local_peer.hpp"
+
 using namespace kvik;
+using namespace std::chrono_literals;
 
 TEST_CASE("Comparison", "[LocalPeer]")
 {
@@ -39,10 +42,10 @@ TEST_CASE("Comparison", "[LocalPeer]")
         CHECK_FALSE(peer1 > peer2);
     }
 
-    SECTION("Different timestamp")
+    SECTION("Different time difference")
     {
         // Treated as additional data
-        peer2.ts = 100;
+        peer2.tsDiff = 100ms;
         CHECK(peer1 == peer2);
         CHECK_FALSE(peer1 < peer2);
         CHECK_FALSE(peer1 > peer2);
