@@ -16,6 +16,9 @@
 
 namespace kvik
 {
+    // Forward declaration
+    struct LocalPeer;
+
     /**
      * @brief Retained local layer peer info
      *
@@ -28,6 +31,13 @@ namespace kvik
         std::array<uint8_t, 32> addr = {};
         uint8_t addrLen = 0;
         uint16_t channel = 0;
+
+        /**
+         * @brief Converts `RetainedLocalPeer` to `LocalPeer`
+         *
+         * @return Local peer info
+         */
+        const LocalPeer unretain() const;
     };
 
     /**

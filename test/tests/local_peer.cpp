@@ -77,14 +77,17 @@ TEST_CASE("Empty", "[LocalPeer]")
     }
 }
 
-TEST_CASE("Retain empty", "[LocalPeer]")
+TEST_CASE("Retain and unretain empty", "[LocalPeer]")
 {
     LocalPeer peer;
 
     RetainedLocalPeer retainedPeer = peer.retain();
-
     REQUIRE(retainedPeer.addrLen == 0);
     REQUIRE(retainedPeer.channel == 0);
+
+    LocalPeer unretainedPeer = retainedPeer.unretain();
+    REQUIRE(unretainedPeer.addr.empty());
+    REQUIRE(unretainedPeer.channel == 0);
 }
 
 TEST_CASE("Retain", "[LocalPeer]")
@@ -96,12 +99,16 @@ TEST_CASE("Retain", "[LocalPeer]")
     };
 
     RetainedLocalPeer retainedPeer = peer.retain();
-
     REQUIRE(retainedPeer.addr[0] == 0x10);
     REQUIRE(retainedPeer.addr[1] == 0x20);
     REQUIRE(retainedPeer.addr[2] == 0x30);
     REQUIRE(retainedPeer.addrLen == 3);
     REQUIRE(retainedPeer.channel == 100);
+
+    LocalPeer unretainedPeer = retainedPeer.unretain();
+    REQUIRE(unretainedPeer == peer);
+    REQUIRE(unretainedPeer.addr == peer.addr);
+    REQUIRE(unretainedPeer.channel == peer.channel);
 }
 
 TEST_CASE("Retain super long address", "[LocalPeer]")
@@ -125,4 +132,9 @@ TEST_CASE("Retain super long address", "[LocalPeer]")
     }
     REQUIRE(retainedPeer.addrLen == maxRetainedAddrSize);
     REQUIRE(retainedPeer.channel == 100);
+
+    LocalPeer unretainedPeer = retainedPeer.unretain();
+    REQUIRE(unretainedPeer != peer);
+    REQUIRE(unretainedPeer.addr.addr.size() == maxRetainedAddrSize);
+    REQUIRE(unretainedPeer.channel == peer.channel);
 }

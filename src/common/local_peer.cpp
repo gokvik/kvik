@@ -32,4 +32,14 @@ namespace kvik
         rlp.channel = channel;
         return rlp;
     }
+
+    const LocalPeer RetainedLocalPeer::unretain() const
+    {
+        return {
+            .addr = {.addr = {
+                         addr.begin(),
+                         std::next(addr.begin(), addrLen)}},
+            .channel = channel,
+        };
+    }
 }
