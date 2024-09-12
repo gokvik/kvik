@@ -108,18 +108,3 @@ namespace kvik
         std::string toString() const;
     };
 } // namespace kvik
-
-// Define hasher function
-template <>
-struct std::hash<kvik::LocalMsg>
-{
-    std::size_t operator()(kvik::LocalMsg const &msg) const noexcept
-    {
-        return std::hash<kvik::LocalMsgType>{}(msg.type) +
-               std::hash<kvik::LocalAddr>{}(msg.addr) +
-               std::hash<kvik::LocalAddr>{}(msg.relayedAddr) +
-               std::hash<std::string>{}(msg.topic) +
-               std::hash<std::string>{}(msg.payload) +
-               std::hash<uint16_t>{}(msg.id);
-    }
-};

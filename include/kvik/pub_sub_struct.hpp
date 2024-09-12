@@ -89,35 +89,3 @@ namespace kvik
         bool operator!=(const SubReq &other) const;
     };
 } // namespace kvik
-
-// Define hasher function
-template <>
-struct std::hash<kvik::PubData>
-{
-    std::size_t operator()(kvik::PubData const &data) const noexcept
-    {
-        return std::hash<std::string>{}(data.topic) +
-               std::hash<std::string>{}(data.payload);
-    }
-};
-
-// Define hasher function
-template <>
-struct std::hash<kvik::SubData>
-{
-    std::size_t operator()(kvik::SubData const &data) const noexcept
-    {
-        return std::hash<std::string>{}(data.topic) +
-               std::hash<std::string>{}(data.payload);
-    }
-};
-
-// Define hasher function
-template <>
-struct std::hash<kvik::SubReq>
-{
-    std::size_t operator()(kvik::SubReq const &sub) const noexcept
-    {
-        return std::hash<std::string>{}(sub.topic);
-    }
-};

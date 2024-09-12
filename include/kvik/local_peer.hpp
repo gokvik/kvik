@@ -91,13 +91,3 @@ namespace kvik
         const RetainedLocalPeer retain() const;
     };
 }
-
-// Define hasher function
-template <>
-struct std::hash<kvik::LocalPeer>
-{
-    std::size_t operator()(kvik::LocalPeer const &peer) const noexcept
-    {
-        return std::hash<kvik::LocalAddr>{}(peer.addr);
-    }
-};
