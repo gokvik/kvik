@@ -52,8 +52,9 @@ TEST_CASE("Comparison", "[LocalMsg]")
 
     SECTION("Different IDs")
     {
+        // Just additional data, no difference in comparison
         msg2.id = 1;
-        REQUIRE(msg1 != msg2);
+        REQUIRE(msg1 == msg2);
     }
 
     SECTION("Different fail reasons")

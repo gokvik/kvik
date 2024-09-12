@@ -80,8 +80,7 @@ namespace kvik
                addr == other.addr &&
                relayedAddr == other.relayedAddr &&
                topic == other.topic &&
-               payload == other.payload &&
-               id == other.id;
+               payload == other.payload;
     }
 
     bool LocalMsg::operator!=(const LocalMsg &other) const

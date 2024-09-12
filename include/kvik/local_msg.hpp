@@ -77,9 +77,9 @@ namespace kvik
         LocalAddr relayedAddr = {};             //!< Relayed address (processed by relay node)
         std::string topic = "";                 //!< Topic of message
         std::string payload = "";               //!< Payload of message
-        uint16_t id = 0;                        //!< Message ID
 
         // Additional data
+        uint16_t id = 0;                                          //!< Message ID
         NodeType nodeType = NodeType::UNKNOWN;                    //!< This node type
         LocalMsgFailReason failReason = LocalMsgFailReason::NONE; //!< Fail reason
         uint16_t ts = 0;                                          //!< Timestamp (in configured units)
