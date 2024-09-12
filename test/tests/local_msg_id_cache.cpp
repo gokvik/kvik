@@ -10,7 +10,11 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "kvik/local_addr.hpp"
+
+// Access modifiers hack for testing
+#define private public
 #include "kvik/local_msg_id_cache.hpp"
+#undef private
 
 using namespace kvik;
 using namespace std::chrono_literals;
@@ -22,7 +26,6 @@ class TransparentLocalMsgIdCache : public LocalMsgIdCache
 {
 public:
     using LocalMsgIdCache::LocalMsgIdCache;
-    using Cache = LocalMsgIdCache::Cache;
 
     const Cache &getCache() const
     {

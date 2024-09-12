@@ -26,7 +26,7 @@ namespace kvik
      */
     class LocalMsgIdCache
     {
-    protected:
+    private:
         using MsgIdSet = std::unordered_set<uint16_t>;
         using AddrTsCache = std::unordered_map<uint16_t, MsgIdSet>;
         using Cache = std::unordered_map<LocalAddr, AddrTsCache>;
