@@ -39,6 +39,15 @@ TEST_CASE("Comparison", "[LocalPeer]")
         CHECK_FALSE(peer1 > peer2);
     }
 
+    SECTION("Different timestamp")
+    {
+        // Treated as additional data
+        peer2.ts = 100;
+        CHECK(peer1 == peer2);
+        CHECK_FALSE(peer1 < peer2);
+        CHECK_FALSE(peer1 > peer2);
+    }
+
     SECTION("Less preference")
     {
         // Treated as additional data

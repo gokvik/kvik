@@ -58,6 +58,13 @@ namespace kvik
          */
         int16_t pref = 0;
 
+        /**
+         * @brief Gateway timestamp in milliseconds since epoch
+         *
+         * Used for time synchronization.
+         */
+        uint64_t ts = 0;
+
         bool operator==(const LocalPeer &other) const
         {
             return addr == other.addr;
