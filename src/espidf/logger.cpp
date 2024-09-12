@@ -16,10 +16,6 @@
 
 namespace kvik
 {
-    // Kvik's local log level is ignored
-    // Instead, use standard ESP-IDF log configuration
-    LogLevel logLevel = LogLevel::DEBUG;
-
     void logFunc(LogLevel msgLevel, const char *logTag, const char *fmt, ...)
     {
         esp_log_level_t espMsgLevel;

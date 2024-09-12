@@ -14,9 +14,6 @@
 
 namespace kvik
 {
-    // Set default log level
-    LogLevel logLevel = LogLevel::INFO;
-
     void logFunc(LogLevel msgLevel, const char *logTag, const char *fmt, ...)
     {
         if (logLevel > msgLevel)

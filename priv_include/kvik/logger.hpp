@@ -9,26 +9,10 @@
 
 #pragma once
 
-#include <cstdint>
+#include "kvik/log_level.hpp"
 
 namespace kvik
 {
-    enum class LogLevel : uint_fast8_t
-    {
-        DEBUG = 0,
-        INFO = 1,
-        WARN = 2,
-        ERROR = 3,
-        OFF = 255,
-    };
-
-    /**
-     * @brief Global log level
-     *
-     * On ESP-IDF it's ignored (logging is handled by standard ESP-IDF logger).
-     */
-    extern LogLevel logLevel;
-
     /**
      * @brief Logging handler function
      * @param msgLevel Message log level
