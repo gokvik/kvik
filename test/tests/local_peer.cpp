@@ -90,7 +90,7 @@ TEST_CASE("Retain and unretain empty", "[LocalPeer]")
     REQUIRE(unretainedPeer.channel == 0);
 }
 
-TEST_CASE("Retain", "[LocalPeer]")
+TEST_CASE("Retain and unretain", "[LocalPeer]")
 {
     LocalAddr addr({{0x10, 0x20, 0x30}});
     LocalPeer peer = {
@@ -111,7 +111,7 @@ TEST_CASE("Retain", "[LocalPeer]")
     REQUIRE(unretainedPeer.channel == peer.channel);
 }
 
-TEST_CASE("Retain super long address", "[LocalPeer]")
+TEST_CASE("Retain and unretain super long address", "[LocalPeer]")
 {
     size_t maxRetainedAddrSize = RetainedLocalPeer().addr.max_size();
 
