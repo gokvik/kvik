@@ -35,5 +35,5 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
 target_link_libraries(kvik_test PRIVATE Threads::Threads)
-target_link_libraries(kvik_test PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(kvik_test PRIVATE Catch2::Catch2)
 target_compile_definitions(kvik_test PRIVATE "-DGIT_VERSION=\"${GIT_VERSION}\"")
