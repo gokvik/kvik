@@ -4,6 +4,7 @@
  * @copyright Copyright (c) 2024
  */
 
+#include <chrono>
 #include <unordered_set>
 
 #include <catch2/catch_test_macros.hpp>
@@ -15,6 +16,7 @@
 #include "kvik_testing/dummy_node.hpp"
 
 using namespace kvik;
+using namespace std::chrono_literals;
 
 using PubsLog = DummyNode::PubsLog;
 using SubsLog = DummyNode::SubsLog;
@@ -107,8 +109,7 @@ TEST_CASE("Get message ID", "[Node]")
     DummyNode node(DEFAULT_CONFIG);
     std::unordered_set<uint16_t> msgIds;
 
-    for (size_t i = 0; i < rounds; i++)
-    {
+    for (size_t i = 0; i < rounds; i++) {
         msgIds.insert(node.getMsgId());
     }
 
@@ -128,4 +129,90 @@ TEST_CASE("Validate peer message ID", "[Node]")
     REQUIRE_FALSE(node.validateMsgId(LocalAddr(), 1));
     REQUIRE(node.validateMsgId(LocalAddr({{0x01}}), 1));
     REQUIRE_FALSE(node.validateMsgId(LocalAddr({{0x01}}), 1));
+}
+
+TEST_CASE("Invalid config", "[Node]")
+{
+    auto conf = DEFAULT_CONFIG;
+
+    SECTION("Invalid msgIdCache.maxAge")
+    {
+        conf.msgIdCache.maxAge = 0;
+    }
+
+    REQUIRE_THROWS(DummyNode(conf));
+}
+
+TEST_CASE("Validate message timestamp", "[Node]")
+{
+    // Correct calculation
+    auto calcMsgTs = [](std::chrono::milliseconds timeUnit,
+                        std::chrono::milliseconds tsDiff) -> uint16_t {
+        return (std::chrono::steady_clock::now().time_since_epoch() +
+                tsDiff) /
+               timeUnit;
+    };
+
+    NodeConfig conf;
+    uint8_t &maxAge = conf.msgIdCache.maxAge;
+    std::chrono::milliseconds &timeUnit = conf.msgIdCache.timeUnit;
+    std::chrono::milliseconds tsDiff;
+
+    SECTION("Unit 1s, maxAge 3")
+    {
+        timeUnit = 1s;
+        maxAge = 3;
+
+        SECTION("No time difference")
+        {
+            tsDiff = 0ms;
+        }
+
+        SECTION("Sub unit time difference")
+        {
+            tsDiff = 100ms;
+        }
+
+        SECTION("Multi unit negative time difference")
+        {
+            tsDiff = -3s;
+        }
+
+        auto msgTsNow = calcMsgTs(timeUnit, tsDiff);
+        DummyNode node(conf);
+
+        // Future timestamp is rejected
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow + 2, tsDiff));
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow + 1, tsDiff));
+
+        // Timestamp in range [now - (maxAge - 1), now] is accepted
+        CHECK(node.validateMsgTimestamp(msgTsNow, tsDiff));
+        CHECK(node.validateMsgTimestamp(msgTsNow - 1, tsDiff));
+        CHECK(node.validateMsgTimestamp(msgTsNow - 2, tsDiff));
+
+        // Older timestamp is rejected
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow - 3, tsDiff));
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow - 4, tsDiff));
+    }
+
+    SECTION("Unit 10ms, maxAge 1, tsDiff 0ms")
+    {
+        timeUnit = 10ms;
+        maxAge = 1;
+        tsDiff = 0ms;
+
+        auto msgTsNow = calcMsgTs(timeUnit, tsDiff);
+        DummyNode node(conf);
+
+        // Future timestamp is rejected
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow + 2, tsDiff));
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow + 1, tsDiff));
+
+        // Only current timestamp is accepted (as maxAge is 1)
+        CHECK(node.validateMsgTimestamp(msgTsNow, tsDiff));
+
+        // Older timestamp is rejected
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow - 1, tsDiff));
+        CHECK_FALSE(node.validateMsgTimestamp(msgTsNow - 2, tsDiff));
+    }
 }

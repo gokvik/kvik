@@ -14,8 +14,8 @@
 
 #include "kvik/errors.hpp"
 #include "kvik/local_addr.hpp"
-#include "kvik/node_config.hpp"
 #include "kvik/local_msg_id_cache.hpp"
+#include "kvik/node_config.hpp"
 #include "kvik/pub_sub_struct.hpp"
 
 namespace kvik
@@ -25,7 +25,7 @@ namespace kvik
      */
     class INode
     {
-        const NodeConfig &m_nodeConf;
+        NodeConfig m_nodeConf;
         uint16_t m_msgId;
         LocalMsgIdCache m_msgIdCache;
 
@@ -33,8 +33,9 @@ namespace kvik
         /**
          * @brief Constructs a new generic node
          * @param conf Generic configuration
+         * @throw kvik::Exception Invalid configuration
          */
-        INode(const NodeConfig &conf);
+        INode(NodeConfig conf);
 
         /**
          * @brief Destroys the generic node
@@ -79,7 +80,7 @@ namespace kvik
          */
         ErrCode publishBulk(const std::vector<PubData> &pubs)
         {
-            return this->pubSubBulk(pubs, {});
+            return this->pubSubUnsubBulk(pubs, {}, {});
         }
 
         /**
@@ -103,22 +104,8 @@ namespace kvik
          */
         ErrCode subscribeBulk(const std::vector<SubReq> &subs)
         {
-            return this->pubSubBulk({}, subs);
+            return this->pubSubUnsubBulk({}, subs, {});
         }
-
-        /**
-         * @brief Publishes data and subscribes to topics in bulk
-         *
-         * Advantage of bulk publish/subscribe is all data are put together
-         * possibly into single big packet. In case of transmission over radio,
-         * this saves a lot of time compared to multiple smaller chunks.
-         *
-         * @param pubs Vector of data to publish
-         * @param subs Vector of subscription requests
-         * @return Error code (node-specific)
-         */
-        virtual ErrCode pubSubBulk(const std::vector<PubData> &pubs,
-                                   const std::vector<SubReq> &subs) = 0;
 
         /**
          * @brief Unsubscribes from topic
@@ -138,7 +125,27 @@ namespace kvik
          * @param topics Topics
          * @return Error code (node-specific)
          */
-        virtual ErrCode unsubscribeBulk(const std::vector<std::string> &topics) = 0;
+        ErrCode unsubscribeBulk(const std::vector<std::string> &topics)
+        {
+            return this->pubSubUnsubBulk({}, {}, topics);
+        }
+
+        /**
+         * @brief Publishes data, subscribes to and unsubscribes from topics in bulk
+         *
+         * Advantage of bulk publish/subscribe/unsubscribe is all data are put
+         * together possibly into single big packet. In case of transmission
+         * over radio, this saves a lot of time compared to multiple smaller
+         * chunks.
+         *
+         * @param pubs Vector of data to publish
+         * @param subs Vector of subscription requests
+         * @param unsubs Vector of unsubscription requests
+         * @return Error code (node-specific)
+         */
+        virtual ErrCode pubSubUnsubBulk(const std::vector<PubData> &pubs,
+                                        const std::vector<SubReq> &subs,
+                                        const std::vector<std::string> &unsubs) = 0;
 
         /**
          * @brief Unsubscribes from all topics
@@ -175,5 +182,19 @@ namespace kvik
          * @retval false Message ID is invalid (duplicate)
          */
         bool validateMsgId(const LocalAddr &addr, uint16_t id);
+
+        /**
+         * @brief Validates received message timestamp
+         *
+         * Not multithread safe.
+         *
+         * @param ts Timestamp
+         * @param tsDiff Timestamp difference between nodes
+         * @retval true Timestamp is valid
+         * @retval false Timestamp is invalid
+         */
+        bool validateMsgTimestamp(
+            uint16_t ts,
+            std::chrono::milliseconds tsDiff = std::chrono::milliseconds(0));
     };
 } // namespace kvik

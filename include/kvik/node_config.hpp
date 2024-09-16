@@ -58,6 +58,8 @@ namespace kvik
              * Thus, by default, message ID cache entry has lifetime of between
              * 1.5 and 2 seconds, and maximum time drift of received message is
              * 1 second.
+             *
+             * Value 0 is invalid and will throw exception!
              */
             uint8_t maxAge = 3;
         };
