@@ -23,7 +23,8 @@ namespace kvik
     class ILocalLayer
     {
     public:
-        using RecvCb = std::function<ErrCode(const LocalMsg &)>;
+        using RecvCb = std::function<ErrCode(LocalMsg)>;
+        using Channels = std::vector<uint16_t>;
 
     protected:
         RecvCb m_recvCb = nullptr;
@@ -35,9 +36,35 @@ namespace kvik
          * Should be used by `INode` only!
          *
          * @param msg Message
-         * @return Error code
+         * @retval INVALID_SIZE Supplied data is too big for processing
+         * @retval SUCCESS Successfully sent
+         * @retval * Any other protocol-specific code
          */
         virtual ErrCode send(const LocalMsg &msg) = 0;
+
+        /**
+         * @brief Gives list of possible channels
+         *
+         * Used on client and relay nodes during gateway discovery.
+         *
+         * @return Vector of channels (can be empty, in which case
+         * no `setChannel` call will be made unless retained client data
+         * contain some garbage)
+         */
+        virtual const Channels &getChannels() = 0;
+
+        /**
+         * @brief Sets channel
+         *
+         * Channel 0 is treated as default one.
+         *
+         * @param ch Channel number
+         * @retval NOT_SUPPORTED Channel change not supported
+         *         (use only if `getChannels` returns empty vector)
+         * @retval INVALID_ARG Invalid channel number
+         * @retval SUCCESS Channel successfully changed
+         */
+        virtual ErrCode setChannel(uint16_t ch) = 0;
 
         /**
          * @brief Sets receive callback
