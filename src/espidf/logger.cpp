@@ -16,7 +16,8 @@
 
 namespace kvik
 {
-    void logFunc(LogLevel msgLevel, const char *logTag, const char *fmt, ...)
+    void logFunc(LogLevel msgLevel, const char *logTag, const char *funcName,
+                 const char *fmt, ...)
     {
         esp_log_level_t espMsgLevel;
 

@@ -22,8 +22,8 @@ namespace kvik
      */
     void logFunc(LogLevel msgLevel, const char *logTag, const char *fmt, ...);
 
-#define KVIK_LOGD(fmt, ...) logFunc(LogLevel::DEBUG, KVIK_LOG_TAG, fmt, ##__VA_ARGS__)
-#define KVIK_LOGI(fmt, ...) logFunc(LogLevel::INFO, KVIK_LOG_TAG, fmt, ##__VA_ARGS__)
-#define KVIK_LOGW(fmt, ...) logFunc(LogLevel::WARN, KVIK_LOG_TAG, fmt, ##__VA_ARGS__)
-#define KVIK_LOGE(fmt, ...) logFunc(LogLevel::ERROR, KVIK_LOG_TAG, fmt, ##__VA_ARGS__)
+#define KVIK_LOGD(fmt, ...) logFunc(LogLevel::DEBUG, KVIK_LOG_TAG, "@%s: " fmt, __func__, ##__VA_ARGS__)
+#define KVIK_LOGI(fmt, ...) logFunc(LogLevel::INFO, KVIK_LOG_TAG, "@%s: " fmt, __func__, ##__VA_ARGS__)
+#define KVIK_LOGW(fmt, ...) logFunc(LogLevel::WARN, KVIK_LOG_TAG, "@%s: " fmt, __func__, ##__VA_ARGS__)
+#define KVIK_LOGE(fmt, ...) logFunc(LogLevel::ERROR, KVIK_LOG_TAG, "@%s: " fmt, __func__, ##__VA_ARGS__)
 } // namespace kvik

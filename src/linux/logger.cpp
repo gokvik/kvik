@@ -45,7 +45,7 @@ namespace kvik
         switch (msgLevel)
         {
         case LogLevel::DEBUG:
-            fprintf(stderr, "\033[0;34m[D] %s: ", logTag);
+            fprintf(stderr, "\033[0;2m[D] %s: ", logTag);
             break;
         case LogLevel::INFO:
             fprintf(stderr, "\033[0;36m[I] %s: ", logTag);
