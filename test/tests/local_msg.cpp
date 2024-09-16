@@ -38,15 +38,27 @@ TEST_CASE("Comparison", "[LocalMsg]")
         REQUIRE(msg1 != msg2);
     }
 
-    SECTION("Different topics")
+    SECTION("Different publications")
     {
-        msg2.topic = "1";
+        msg2.pubs.push_back({.topic = "1", .payload = "2"});
         REQUIRE(msg1 != msg2);
     }
 
-    SECTION("Different payloads")
+    SECTION("Different subscriptions")
     {
-        msg2.payload = "1";
+        msg2.subs.push_back("1");
+        REQUIRE(msg1 != msg2);
+    }
+
+    SECTION("Different unsubscriptions")
+    {
+        msg2.unsubs.push_back("1");
+        REQUIRE(msg1 != msg2);
+    }
+
+    SECTION("Different subscriptions data")
+    {
+        msg2.subsData.push_back({.topic = "1", .payload = "2"});
         REQUIRE(msg1 != msg2);
     }
 

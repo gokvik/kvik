@@ -13,7 +13,7 @@
 
 namespace kvik
 {
-    constexpr const char *localMsgTypeToStr(LocalMsgType mt) noexcept
+    const char *localMsgTypeToStr(LocalMsgType mt) noexcept
     {
         switch (mt)
         {
@@ -27,20 +27,16 @@ namespace kvik
             return "PROBE_REQ";
         case LocalMsgType::PROBE_RES:
             return "PROBE_RES";
-        case LocalMsgType::PUB:
-            return "PUB";
-        case LocalMsgType::SUB_REQ:
-            return "SUB_REQ";
+        case LocalMsgType::PUB_SUB_UNSUB:
+            return "PUB_SUB_UNSUB";
         case LocalMsgType::SUB_DATA:
             return "SUB_DATA";
-        case LocalMsgType::UNSUB:
-            return "UNSUB";
         default:
             return "???";
         }
     }
 
-    constexpr const char *localMsgFailReasonToStr(LocalMsgFailReason fr) noexcept
+    const char *localMsgFailReasonToStr(LocalMsgFailReason fr) noexcept
     {
         switch (fr)
         {
@@ -50,8 +46,6 @@ namespace kvik
             return "DUP_ID";
         case LocalMsgFailReason::INVALID_TS:
             return "INVALID_TS";
-        case LocalMsgFailReason::MALFORMED:
-            return "MALFORMED";
         case LocalMsgFailReason::PROCESSING_FAILED:
             return "PROCESSING_FAILED";
         default:
@@ -59,32 +53,45 @@ namespace kvik
         }
     }
 
-    std::string LocalMsg::toString() const
-    {
-        return std::string{localMsgTypeToStr(type)} + " " +
-               (type == LocalMsgType::FAIL
-                    ? (
-                          std::string("(failed due to ") +
-                          localMsgFailReasonToStr(failReason) +
-                          ") ")
-                    : "") +
-               (!addr.empty() ? addr.toString() : "(no addr)") + " " +
-               (!relayedAddr.empty() ? relayedAddr.toString() : "(not relayed)") + " " +
-               (!topic.empty() ? topic : "(no topic)") + " " +
-               "(" + std::to_string(payload.length()) + " B payload)";
-    }
-
     bool LocalMsg::operator==(const LocalMsg &other) const
     {
         return type == other.type &&
                addr == other.addr &&
                relayedAddr == other.relayedAddr &&
-               topic == other.topic &&
-               payload == other.payload;
+               pubs == other.pubs &&
+               subs == other.subs &&
+               unsubs == other.unsubs &&
+               subsData == other.subsData;
     }
 
     bool LocalMsg::operator!=(const LocalMsg &other) const
     {
         return !this->operator==(other);
+    }
+
+    std::string LocalMsg::toString() const
+    {
+        std::string base = std::string{localMsgTypeToStr(type)} + " " +
+                           (!addr.empty() ? addr.toString() : "(no addr)") +
+                           (!relayedAddr.empty() ? " " + relayedAddr.toString() : "");
+
+        switch (type)
+        {
+        case LocalMsgType::FAIL:
+            return base + " | failed due to " +
+                   localMsgFailReasonToStr(failReason);
+        case LocalMsgType::PROBE_RES:
+            return base + " | pref " + std::to_string(pref);
+        case LocalMsgType::PUB_SUB_UNSUB:
+            return base + " | " +
+                   std::to_string(pubs.size()) + " pubs, " +
+                   std::to_string(subs.size()) + " subs, " +
+                   std::to_string(unsubs.size()) + " unsubs";
+        case LocalMsgType::SUB_DATA:
+            return base + " | data for " +
+                   std::to_string(subsData.size()) + " subs";
+        default:
+            return base;
+        }
     }
 } // namespace kvik
