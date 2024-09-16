@@ -131,15 +131,13 @@ TEST_CASE("Retain and unretain super long address", "[LocalPeer]")
         .channel = 100,
     };
 
-    for (size_t i = 0; i < 3 * maxRetainedAddrSize; i++)
-    {
+    for (size_t i = 0; i < 3 * maxRetainedAddrSize; i++) {
         peer.addr.addr.push_back(0x01);
     }
 
     RetainedLocalPeer retainedPeer = peer.retain();
 
-    for (size_t i = 0; i < maxRetainedAddrSize; i++)
-    {
+    for (size_t i = 0; i < maxRetainedAddrSize; i++) {
         REQUIRE(retainedPeer.addr[i] == 0x01);
     }
     REQUIRE(retainedPeer.addrLen == maxRetainedAddrSize);
