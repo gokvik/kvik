@@ -37,18 +37,15 @@ namespace kvik
         using INode::getMsgId;
         using INode::INode;
         using INode::validateMsgId;
+        using INode::validateMsgTimestamp;
 
-        ErrCode pubSubBulk(const std::vector<PubData> &newPubs,
-                           const std::vector<SubReq> &newSubs)
+        ErrCode pubSubUnsubBulk(const std::vector<PubData> &newPubs,
+                                const std::vector<SubReq> &newSubs,
+                                const std::vector<std::string> &newUnsubs)
         {
             pubsLog.insert(pubsLog.end(), newPubs.begin(), newPubs.end());
             subsLog.insert(subsLog.end(), newSubs.begin(), newSubs.end());
-            return ErrCode::SUCCESS;
-        }
-
-        ErrCode unsubscribeBulk(const std::vector<std::string> &topics)
-        {
-            unsubsLog.insert(unsubsLog.end(), topics.begin(), topics.end());
+            unsubsLog.insert(unsubsLog.end(), newUnsubs.begin(), newUnsubs.end());
             return ErrCode::SUCCESS;
         }
 
