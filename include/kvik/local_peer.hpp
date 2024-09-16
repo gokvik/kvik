@@ -46,8 +46,18 @@ namespace kvik
      */
     struct LocalPeer
     {
-        LocalAddr addr = {};  //!< Peer address
-        uint16_t channel = 0; //!< Wireless channel (only for wireless local layers)
+        /**
+         * @brief Peer address
+         */
+        LocalAddr addr = {};
+
+        /**
+         * @brief Communication channel
+         *
+         * Primarily for wireless local layers, but can be used generally.
+         * Value 0 represents default channel.
+         */
+        uint16_t channel = 0;
 
         /**
          * @brief Peer preference (weight)
@@ -57,7 +67,7 @@ namespace kvik
          * layers.
          * Higher value means higher preference.
          */
-        int16_t pref = 0;
+        int16_t pref = INT16_MIN;
 
         /**
          * @brief Gateway time difference
