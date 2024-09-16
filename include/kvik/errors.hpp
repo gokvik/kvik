@@ -34,10 +34,14 @@ namespace kvik
         NOT_FOUND = 0x12,
         NOT_SUPPORTED = 0x13,
         TIMEOUT = 0x14,
+        TOO_MANY_FAILED_ATTEMPTS = 0x15,
+        NO_GATEWAY = 0x16,
 
         // Error codes corresponding to `LocalMsgFailReason`
-        MSG_MALFORMED = 0x103,
-        MSG_PROCESSING_FAILED = 0x104,
+        MSG_DUP_ID = 0x101,
+        MSG_INVALID_TS = 0x102,
+        MSG_PROCESSING_FAILED = 0x103,
+        MSG_UNKNOWN_SENDER = 0x104,
     };
 
 #define KVIK_STRINGIZE_INNER(x) #x
@@ -59,7 +63,8 @@ namespace kvik
          *
          * @param msg Message
          */
-        explicit Exception(const std::string &msg) : m_msg{msg} {}
+        explicit Exception(const std::string &msg)
+            : m_msg{msg} {}
 
         /**
          * @brief Returns exception's message
@@ -78,32 +83,26 @@ namespace kvik
 #define KVIK_THROW_EXC(msg) (abort())
 #endif // __cpp_exceptions
 
-#define KVIK_RETURN_ERROR(x)         \
-    do                               \
-    {                                \
-        ErrCode err = (x);           \
-        if (err != ErrCode::SUCCESS) \
-        {                            \
-            return err;              \
-        }                            \
+#define KVIK_RETURN_ERROR(x)           \
+    do {                               \
+        ErrCode err = (x);             \
+        if (err != ErrCode::SUCCESS) { \
+            return err;                \
+        }                              \
     } while (0)
 
-#define KVIK_RETURN_ON_ERROR(x)      \
-    do                               \
-    {                                \
-        ErrCode err = (x);           \
-        if (err != ErrCode::SUCCESS) \
-        {                            \
-            return;                  \
-        }                            \
+#define KVIK_RETURN_ON_ERROR(x)        \
+    do {                               \
+        ErrCode err = (x);             \
+        if (err != ErrCode::SUCCESS) { \
+            return;                    \
+        }                              \
     } while (0)
 
 #define KVIK_THROW_EXC_ON_ERROR(x, msg) \
-    do                                  \
-    {                                   \
+    do {                                \
         ErrCode err = (x);              \
-        if (err != ErrCode::SUCCESS)    \
-        {                               \
+        if (err != ErrCode::SUCCESS) {  \
             KVIK_THROW_EXC(msg);        \
         }                               \
     } while (0)
