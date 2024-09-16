@@ -233,6 +233,31 @@ TEST_CASE("Insert, remove and find in wildcard trie", "[WildcardTrie]")
     REQUIRE(trie.empty());
 }
 
+TEST_CASE("Insert, clear, find in wildcard trie", "[WildcardTrie]")
+{
+    WildcardTrie<int> trie("/", "+", "#");
+
+    // Insert single-level wildcard entry
+    REQUIRE(trie.empty());
+    trie.insert("aaa/+", 2);
+    REQUIRE(!trie.find("aaa/bbb").empty());
+
+    // Clear the trie
+    trie.clear();
+
+    // Assert entry is missing
+    REQUIRE(trie.find("aaa/bbb").empty());
+    REQUIRE(trie.empty());
+
+    // Insert once again and remove manually
+    REQUIRE(trie.empty());
+    trie.insert("aaa/+", 2);
+    REQUIRE(!trie.find("aaa/bbb").empty());
+    REQUIRE(trie.remove("aaa/+"));
+    REQUIRE(trie.find("aaa/+").empty());
+    REQUIRE(trie.empty());
+}
+
 TEST_CASE("Find in wildcard trie", "[WildcardTrie]")
 {
     WildcardTrie<int> trie("/", "+", "#");
@@ -298,13 +323,13 @@ TEST_CASE("For each and [] in wildcard trie", "[WildcardTrie]")
 
     std::unordered_map<std::string, int> values;
 
-    trie.forEach([&trie, &values](const std::string &key, const int &value)
-                 {
+    trie.forEach([&trie, &values](const std::string &key, const int &value) {
         // Somehow modify value
         trie[key] = value + 1;
 
         // Store keys and values
-        values[key] = value; });
+        values[key] = value;
+    });
 
     REQUIRE(values == std::unordered_map<std::string, int>{
                           {"abc/#", 3},
@@ -319,7 +344,9 @@ TEST_CASE("For each and [] in wildcard trie", "[WildcardTrie]")
     REQUIRE(trie.find("if/1/else") == FindReturnT{{"if/+/else", 8}});
 }
 
-TEST_CASE("Insert, remove, find in wildcard trie with multicharacter separator/wildcards", "[WildcardTrie]")
+TEST_CASE("Insert, remove, find in wildcard trie with multicharacter "
+          "separator/wildcards",
+          "[WildcardTrie]")
 {
     WildcardTrie<int> trie("(/)", "(+)", "(#)");
 
@@ -358,12 +385,14 @@ TEST_CASE("Insert, remove, find in wildcard trie with multicharacter separator/w
 
     SECTION("Find single-level wildcard")
     {
-        REQUIRE(trie.find("if(/)elseif(/)else") == FindReturnT{{"if(/)(+)(/)else", 7}});
+        REQUIRE(trie.find("if(/)elseif(/)else") ==
+                FindReturnT{{"if(/)(+)(/)else", 7}});
     }
 
     SECTION("Find multi-level wildcard")
     {
-        REQUIRE(trie.find("abc(/)def(/)ghi(/)jkl") == FindReturnT{{"abc(/)(#)", 2}});
+        REQUIRE(trie.find("abc(/)def(/)ghi(/)jkl") ==
+                FindReturnT{{"abc(/)(#)", 2}});
     }
 
     SECTION("Find non-existing")

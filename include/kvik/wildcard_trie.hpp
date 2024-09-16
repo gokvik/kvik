@@ -71,14 +71,12 @@ namespace kvik
               m_lMultiWild{multiLevelWildcard}
         {
             if (m_lSep.empty() || m_lSingleWild.empty() ||
-                m_lMultiWild.empty())
-            {
+                m_lMultiWild.empty()) {
                 KVIK_THROW_EXC("Separator or wildcard strings can't be empty");
             }
 
             if (m_lSep == m_lSingleWild || m_lSep == m_lMultiWild ||
-                m_lSingleWild == m_lMultiWild)
-            {
+                m_lSingleWild == m_lMultiWild) {
                 KVIK_THROW_EXC("Duplicate separator or wildcard strings");
             }
         }
@@ -95,13 +93,11 @@ namespace kvik
             auto levels = this->splitToLevels(key);
 
             // Get or create child on each level
-            for (size_t i = 0; i < levels.size(); i++)
-            {
+            for (size_t i = 0; i < levels.size(); i++) {
                 auto &level = levels[i];
 
                 // Create new child
-                if (cur->childs.find(level) == cur->childs.end())
-                {
+                if (cur->childs.find(level) == cur->childs.end()) {
                     cur->childs[level] = std::make_unique<Node>();
                     cur->childs[level]->levelIndex = i + 1;
                 }
@@ -141,35 +137,29 @@ namespace kvik
             std::vector<Node *> nodeStack;
 
             // Get node if exists
-            for (auto &level : levels)
-            {
+            for (auto &level : levels) {
                 nodeStack.push_back(cur);
 
-                if (cur->childs.find(level) == cur->childs.end())
-                {
+                if (cur->childs.find(level) == cur->childs.end()) {
                     return false;
                 }
                 cur = cur->childs.at(level).get();
             }
 
             // Can't remove non-leaf node
-            if (!cur->isLeaf)
-            {
+            if (!cur->isLeaf) {
                 return false;
             }
 
             cur->isLeaf = false;
 
-            if (cur->childs.empty())
-            {
+            if (cur->childs.empty()) {
                 // Delete all redundant ancestors
                 // There is `int` instead of `size_t`, because we need signed type.
-                for (int i = nodeStack.size() - 1; i >= 0; i--)
-                {
+                for (int i = nodeStack.size() - 1; i >= 0; i--) {
                     Node *node = nodeStack.at(i);
                     if (node->isLeaf || node->childs.size() > 1 ||
-                        node == &m_root)
-                    {
+                        node == &m_root) {
                         node->childs.erase(levels.at(i));
 
                         // Previous ancestors are no longer redundant
@@ -199,33 +189,25 @@ namespace kvik
             BFSQueueT nodeQueue;
             nodeQueue.push({"", &m_root});
 
-            while (!nodeQueue.empty())
-            {
+            while (!nodeQueue.empty()) {
                 auto [nodeKey, node] = nodeQueue.front();
 
-                if (node->levelIndex == levels.size() && node->isLeaf)
-                {
+                if (node->levelIndex == levels.size() && node->isLeaf) {
                     // Match
                     values.insert({nodeKey, node->value});
-                }
-                else if (node->levelIndex < levels.size())
-                {
+                } else if (node->levelIndex < levels.size()) {
                     // Enqueue relevant childs
-                    for (auto &[childLevel, childNode] : node->childs)
-                    {
+                    for (auto &[childLevel, childNode] : node->childs) {
                         std::string childKey = nodeKey == ""
                                                    ? childLevel
                                                    : nodeKey + m_lSep + childLevel;
 
                         if (childLevel == levels.at(node->levelIndex) ||
-                            childLevel == m_lSingleWild)
-                        {
+                            childLevel == m_lSingleWild) {
                             // Key matches or has single-level wildcard
                             nodeQueue.push({childKey, childNode.get()});
-                        }
-                        else if (childLevel == m_lMultiWild &&
-                                 childNode->isLeaf)
-                        {
+                        } else if (childLevel == m_lMultiWild &&
+                                   childNode->isLeaf) {
                             // Multi-level wildcard
                             values.insert({childKey, childNode->value});
                         }
@@ -250,19 +232,16 @@ namespace kvik
             BFSQueueT nodeQueue;
             nodeQueue.push({"", &m_root});
 
-            while (!nodeQueue.empty())
-            {
+            while (!nodeQueue.empty()) {
                 auto [nodeKey, node] = nodeQueue.front();
 
                 // Call function
-                if (node->isLeaf)
-                {
+                if (node->isLeaf) {
                     f(nodeKey, node->value);
                 }
 
                 // Enqueue children
-                for (auto &[childLevel, childNode] : node->childs)
-                {
+                for (auto &[childLevel, childNode] : node->childs) {
                     std::string childKey = nodeKey == ""
                                                ? childLevel
                                                : nodeKey + m_lSep + childLevel;
@@ -284,6 +263,14 @@ namespace kvik
             return m_root.childs.empty();
         }
 
+        /**
+         * @brief Clears the trie structure
+         */
+        void clear()
+        {
+            m_root = {};
+        }
+
     protected:
         /**
          * @brief Splits `key` to levels
@@ -298,8 +285,7 @@ namespace kvik
             size_t curPos = 0, nextPos;
             std::vector<std::string> levels;
 
-            while ((nextPos = key.find(m_lSep, curPos)) != std::string::npos)
-            {
+            while ((nextPos = key.find(m_lSep, curPos)) != std::string::npos) {
                 levels.push_back(key.substr(curPos, nextPos - curPos));
                 curPos = nextPos + m_lSep.length();
             }
