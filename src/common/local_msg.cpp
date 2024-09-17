@@ -15,8 +15,7 @@ namespace kvik
 {
     const char *localMsgTypeToStr(LocalMsgType mt) noexcept
     {
-        switch (mt)
-        {
+        switch (mt) {
         case LocalMsgType::NONE:
             return "NONE";
         case LocalMsgType::OK:
@@ -38,8 +37,7 @@ namespace kvik
 
     const char *localMsgFailReasonToStr(LocalMsgFailReason fr) noexcept
     {
-        switch (fr)
-        {
+        switch (fr) {
         case LocalMsgFailReason::NONE:
             return "NONE";
         case LocalMsgFailReason::DUP_ID:
@@ -48,6 +46,8 @@ namespace kvik
             return "INVALID_TS";
         case LocalMsgFailReason::PROCESSING_FAILED:
             return "PROCESSING_FAILED";
+        case LocalMsgFailReason::UNKNOWN_SENDER:
+            return "UNKNOWN_SENDER";
         default:
             return "???";
         }
@@ -75,21 +75,38 @@ namespace kvik
                            (!addr.empty() ? addr.toString() : "(no addr)") +
                            (!relayedAddr.empty() ? " " + relayedAddr.toString() : "");
 
-        switch (type)
-        {
+        switch (type) {
         case LocalMsgType::FAIL:
             return base + " | failed due to " +
                    localMsgFailReasonToStr(failReason);
         case LocalMsgType::PROBE_RES:
             return base + " | pref " + std::to_string(pref);
         case LocalMsgType::PUB_SUB_UNSUB:
-            return base + " | " +
-                   std::to_string(pubs.size()) + " pubs, " +
-                   std::to_string(subs.size()) + " subs, " +
-                   std::to_string(unsubs.size()) + " unsubs";
+            base += " | ";
+            for (const auto &p : pubs) {
+                base += "PUB " + p.toString() + ", ";
+            }
+            for (const auto &s : subs) {
+                base += "SUB " + s + ", ";
+            }
+            for (const auto &u : unsubs) {
+                base += "UNSUB " + u + ", ";
+            }
+
+            // Remove last ", "
+            base.erase(base.size() - 2);
+
+            return base;
         case LocalMsgType::SUB_DATA:
-            return base + " | data for " +
-                   std::to_string(subsData.size()) + " subs";
+            base += " | ";
+            for (const auto &d : subsData) {
+                base += d.toString() + ", ";
+            }
+
+            // Remove last ", "
+            base.erase(base.size() - 2);
+
+            return base;
         default:
             return base;
         }
