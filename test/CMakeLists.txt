@@ -48,7 +48,7 @@ target_compile_definitions(
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_BUILD_TYPE STREQUAL "Debug")
   include(CodeCoverage)
   append_coverage_compiler_flags_to_target(${PROJECT_NAME})
-  set(GCOVR_ADDITIONAL_ARGS --exclude-unreachable-branches)
+  set(GCOVR_ADDITIONAL_ARGS --exclude-unreachable-branches --print-summary)
   setup_target_for_coverage_gcovr_html(
     NAME ${PROJECT_NAME}_coverage
     EXECUTABLE ${PROJECT_NAME}
