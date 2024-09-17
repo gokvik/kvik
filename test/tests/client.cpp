@@ -422,6 +422,21 @@ TEST_CASE("Periodic time sync", "[Client]")
     }
 }
 
+TEST_CASE("Publish, subscribe, unsubscribe without data", "[Client]")
+{
+    DEFAULT_LL(ll);
+    ll.responses.push(MSG_PROBE_RES_GW2);
+
+    Client cl(CONF, &ll);
+
+    // Shouldn't send any message
+    CHECK(cl.pubSubUnsubBulk({}, {}, {}) == ErrCode::SUCCESS);
+
+    std::this_thread::sleep_for(10ms);
+    CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ});
+    CHECK(ll.respSuccLog == RespSuccLog{true});
+}
+
 TEST_CASE("Publish, subscribe, unsubscribe", "[Client]")
 {
     DEFAULT_LL(ll);
