@@ -257,7 +257,7 @@ TEST_CASE("Initialization without retained data", "[Client]")
         ll.responses.push(MSG_PROBE_RES_GW1);
         Client cl(CONF, &ll);
         cl.syncTime(); // Just to trigger message dispatch
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ_GW1});
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
         CHECK(ll.channelsLog == ChannelsLog{});
@@ -269,7 +269,7 @@ TEST_CASE("Initialization without retained data", "[Client]")
         ll.responses.push(MSG_PROBE_RES_RELAY1);
         Client cl(CONF, &ll);
         cl.syncTime(); // Just to trigger message dispatch
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ_RELAY1});
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
         CHECK(ll.channelsLog == ChannelsLog{});
@@ -292,7 +292,7 @@ TEST_CASE("Initialization with retained data", "[Client]")
         ll.responses.push(MSG_PROBE_RES_GW1);
         Client cl(CONF, &ll, retained);
         cl.syncTime(); // Just to trigger message dispatch
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ_GW1, MSG_PROBE_REQ_GW1});
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
         CHECK(ll.channelsLog == ChannelsLog{PEER_GW1.channel});
@@ -307,7 +307,7 @@ TEST_CASE("Initialization with retained data", "[Client]")
 
         Client cl(CONF, &ll, retained);
         cl.syncTime(); // Just to trigger message dispatch
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ_GW1, MSG_PROBE_REQ,
                                     MSG_PROBE_REQ_GW1});
         CHECK(ll.respSuccLog == RespSuccLog{false, true, true});
@@ -344,7 +344,7 @@ TEST_CASE("Initialization with multiple gateways on multiple channels",
 
     Client cl(CONF, &ll);
     cl.syncTime(); // Just to trigger message dispatch
-    std::this_thread::sleep_for(5ms);
+    std::this_thread::sleep_for(10ms);
 
     CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ, MSG_PROBE_REQ,
                                 MSG_PROBE_REQ_GW3});
@@ -411,6 +411,7 @@ TEST_CASE("Publish, subscribe, unsubscribe", "[Client]")
         CHECK(cl.pubSubUnsubBulk({PUB_DATA1, PUB_DATA2}, {SUB_REQ1, SUB_REQ2},
                                  {SUB_REQ1.topic, SUB_REQ2.topic}) ==
               ErrCode::SUCCESS);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
     }
 
@@ -420,6 +421,7 @@ TEST_CASE("Publish, subscribe, unsubscribe", "[Client]")
         CHECK(cl.pubSubUnsubBulk({PUB_DATA1, PUB_DATA2}, {SUB_REQ1, SUB_REQ2},
                                  {SUB_REQ1.topic, SUB_REQ2.topic}) ==
               ErrCode::TIMEOUT);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true});
     }
 
@@ -430,6 +432,7 @@ TEST_CASE("Publish, subscribe, unsubscribe", "[Client]")
         CHECK(cl.pubSubUnsubBulk({PUB_DATA1, PUB_DATA2}, {SUB_REQ1, SUB_REQ2},
                                  {SUB_REQ1.topic, SUB_REQ2.topic}) ==
               ErrCode::MSG_PROCESSING_FAILED);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
     }
 
@@ -516,6 +519,7 @@ TEST_CASE("Unsubscribe all with populated database", "[Client]")
         Client cl(CONF, &ll);
         cl.subscribeBulk({SUB_REQ1, SUB_REQ2});
         CHECK(cl.unsubscribeAll() == ErrCode::SUCCESS);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true, true});
     }
 
@@ -524,6 +528,7 @@ TEST_CASE("Unsubscribe all with populated database", "[Client]")
         Client cl(CONF, &ll);
         cl.subscribeBulk({SUB_REQ1, SUB_REQ2});
         CHECK(cl.unsubscribeAll() == ErrCode::TIMEOUT);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
     }
 
@@ -533,6 +538,7 @@ TEST_CASE("Unsubscribe all with populated database", "[Client]")
         Client cl(CONF, &ll);
         cl.subscribeBulk({SUB_REQ1, SUB_REQ2});
         CHECK(cl.unsubscribeAll() == ErrCode::MSG_PROCESSING_FAILED);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true, true});
     }
 
@@ -567,6 +573,7 @@ TEST_CASE("Resubscribe all with populated database", "[Client]")
         Client cl(CONF, &ll);
         cl.subscribeBulk({SUB_REQ1, SUB_REQ2});
         CHECK(cl.resubscribeAll() == ErrCode::SUCCESS);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true, true});
     }
 
@@ -575,6 +582,7 @@ TEST_CASE("Resubscribe all with populated database", "[Client]")
         Client cl(CONF, &ll);
         cl.subscribeBulk({SUB_REQ1, SUB_REQ2});
         CHECK(cl.resubscribeAll() == ErrCode::TIMEOUT);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
     }
 
@@ -584,6 +592,7 @@ TEST_CASE("Resubscribe all with populated database", "[Client]")
         Client cl(CONF, &ll);
         cl.subscribeBulk({SUB_REQ1, SUB_REQ2});
         CHECK(cl.resubscribeAll() == ErrCode::MSG_PROCESSING_FAILED);
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.respSuccLog == RespSuccLog{true, true, true});
     }
 
@@ -645,6 +654,7 @@ TEST_CASE("Receive subscription data", "[Client]")
     }
 
     // Response should be successful in any case
+    std::this_thread::sleep_for(10ms);
     CHECK(ll.respSuccLog == RespSuccLog{true, true});
 }
 
@@ -664,7 +674,7 @@ TEST_CASE("Gateway discovery on local layer without channels", "[Client]")
 
         // Just to trigger message dispatch
         CHECK(cl.syncTime() == ErrCode::SUCCESS);
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
 
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ,
                                     MSG_PROBE_REQ_GW3});
@@ -687,7 +697,7 @@ TEST_CASE("Gateway discovery on local layer without channels", "[Client]")
 
         // Discovery failed, other messages should fail too
         CHECK(cl.syncTime() == ErrCode::NO_GATEWAY);
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
 
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ,
                                     MSG_PROBE_REQ, MSG_PROBE_REQ,
@@ -716,7 +726,7 @@ TEST_CASE("Gateway discovery on local layer with channels", "[Client]")
 
         // Just to trigger message dispatch
         CHECK(cl.syncTime() == ErrCode::SUCCESS);
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
 
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ,
                                     MSG_PROBE_REQ, MSG_PROBE_REQ,
@@ -746,7 +756,7 @@ TEST_CASE("Gateway discovery on local layer with channels", "[Client]")
 
         // Discovery failed, other messages should fail too
         CHECK(cl.syncTime() == ErrCode::NO_GATEWAY);
-        std::this_thread::sleep_for(5ms);
+        std::this_thread::sleep_for(10ms);
 
         CHECK(ll.sentLog == SentLog{8, MSG_PROBE_REQ});
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
@@ -765,6 +775,7 @@ TEST_CASE("Gateway discovery on local layer with channels", "[Client]")
         ll.setChannelRet = ErrCode::GENERIC_FAILURE;
         CHECK(cl.discoverGateway() == ErrCode::TOO_MANY_FAILED_ATTEMPTS);
 
+        std::this_thread::sleep_for(10ms);
         CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ});
         CHECK(ll.respSuccLog == RespSuccLog{true, true});
         CHECK(ll.channelsLog ==
@@ -851,7 +862,7 @@ TEST_CASE("Parallel gateway discoveries", "[Client]")
 
     // Just to trigger message dispatch
     CHECK(cl.syncTime() == ErrCode::SUCCESS);
-    std::this_thread::sleep_for(5ms);
+    std::this_thread::sleep_for(10ms);
 
     SentLog correctSentLog(4 /*channels*/ * 4 /*scans*/, MSG_PROBE_REQ);
     correctSentLog.push_back(MSG_PROBE_REQ_GW3);
@@ -938,6 +949,7 @@ TEST_CASE("Gateway rediscovery after many failures", "[Client]")
         CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::SUCCESS);
     }
 
+    std::this_thread::sleep_for(10ms);
     CHECK(ll.sentLog == SentLog{
                             MSG_PROBE_REQ, // Initial gateway discovery
                             MSG_PUB_1_GW2, // Failed publication 1
@@ -1062,6 +1074,7 @@ TEST_CASE("Receive response from different node", "[Client]")
     CHECK(cl.syncTime() == ErrCode::TIMEOUT);
     CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::TIMEOUT);
 
+    std::this_thread::sleep_for(10ms);
     CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ_GW3,
                                 MSG_PUB_1_GW3});
     CHECK(ll.respSuccLog == RespSuccLog{true, false, false});
@@ -1082,6 +1095,7 @@ TEST_CASE("Receive invalid response type", "[Client]")
     // Receives PROBE_RES response (OK expected)
     CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::TIMEOUT);
 
+    std::this_thread::sleep_for(10ms);
     CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ_GW2,
                                 MSG_PUB_1_GW2});
     CHECK(ll.respSuccLog == RespSuccLog{true, false, false});
