@@ -644,9 +644,20 @@ namespace kvik
              pendingType == LocalMsgType::PUB_SUB_UNSUB) ||
             (msg.type == LocalMsgType::PROBE_RES &&
              pendingType == LocalMsgType::PROBE_REQ)) {
-            // Valid response, notify waiting sender
-            pendingMsg.resps.push_back(msg);
-            if (!pendingMsg.broadcast) {
+            // Valid response type
+            if (pendingMsg.broadcast) {
+                pendingMsg.resps.push_back(msg);
+            } else {
+                if (pendingMsg.resps.size() > 0) {
+                    // Response already exists
+                    KVIK_LOGD("Discarding response for request already "
+                              "having response: %s",
+                              msg.toString().c_str());
+                    return ErrCode::NOT_FOUND;
+                }
+
+                // Notify waiting sender
+                pendingMsg.resps.push_back(msg);
                 pendingMsg.respPromise.set_value();
             }
             return ErrCode::SUCCESS;

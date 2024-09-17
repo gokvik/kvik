@@ -1255,6 +1255,46 @@ TEST_CASE("Receive response with various FAIL reasons", "[Client]")
     CHECK(ll.respSuccLog == RespSuccLog{true, true});
 }
 
+TEST_CASE("Two valid responses for single unicast request", "[Client]")
+{
+    auto modifConf = CONF;
+    modifConf.nodeConf.localDelivery.respTimeout = 100ms;
+
+    DEFAULT_LL(ll);
+    ll.responses.push(MSG_PROBE_RES_GW2);
+
+    Client cl(modifConf, &ll);
+
+    std::thread t([&ll]() {
+        // Sleep until publish sends out a message
+        std::this_thread::sleep_for(10ms);
+
+        CHECK(ll.sentLog.size() == 2);
+        if (ll.sentLog.size() != 2) {
+            return;
+        }
+
+        auto reqMsg = ll.sentLog.back();
+        auto msg = MSG_OK_GW2;
+        msg.reqId = reqMsg.id;
+
+        // First response
+        prepLocalMsg(msg, ll.respTsDiff, ll.respTimeUnit);
+        CHECK(ll.recv(msg) == ErrCode::SUCCESS);
+
+        // Second response
+        prepLocalMsg(msg, ll.respTsDiff, ll.respTimeUnit);
+        CHECK(ll.recv(msg) == ErrCode::NOT_FOUND);
+    });
+
+    CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::SUCCESS);
+    t.join();
+
+    std::this_thread::sleep_for(10ms);
+    CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PUB_1_GW2});
+    CHECK(ll.respSuccLog == RespSuccLog{true});
+}
+
 TEST_CASE("Destructor resets local layer receive callback", "[Client]")
 {
     DEFAULT_LL(ll);
