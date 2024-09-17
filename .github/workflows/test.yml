@@ -10,7 +10,7 @@ jobs:
     steps:
 
     - name: Install dependencies
-      run: sudo apt update && sudo apt-get install -y git make cmake
+      run: sudo apt update && sudo apt-get install -y git make cmake gcovr
 
     - name: Checkout
       uses: actions/checkout@v3
