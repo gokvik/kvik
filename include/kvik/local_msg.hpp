@@ -73,8 +73,7 @@ namespace kvik
         /**
          * @brief Unknown message sender
          *
-         * Currently unused in FAIL messages as an attacker could DoS the node
-         * just by sending duplicates in loop.
+         * Currently unused in FAIL messages.
          */
         UNKNOWN_SENDER = 0x04,
     };
