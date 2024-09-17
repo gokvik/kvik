@@ -1000,7 +1000,81 @@ TEST_CASE("Gateway rediscovery after many failures", "[Client]")
                                         true});
 }
 
-TEST_CASE("Replay protection", "[Client]")
+TEST_CASE("Replay protection for responses", "[Client]")
+{
+    auto modifConf = CONF;
+    modifConf.nodeConf.localDelivery.respTimeout = 100ms;
+
+    DEFAULT_LL(ll);
+    ll.responses.push(MSG_PROBE_RES_GW2);
+
+    SECTION("Duplicate ID")
+    {
+        Client cl(modifConf, &ll);
+
+        std::thread t([&ll]() {
+            // Sleep until publish sends out a message
+            std::this_thread::sleep_for(10ms);
+
+            CHECK(ll.sentLog.size() == 2);
+            if (ll.sentLog.size() != 2) {
+                return;
+            }
+
+            auto reqMsg = ll.sentLog.back();
+
+            // Intentionally wrong response type
+            auto msg = MSG_PROBE_RES_GW2;
+            msg.reqId = reqMsg.id;
+            prepLocalMsg(msg, ll.respTsDiff, ll.respTimeUnit);
+
+            CHECK(ll.recv(msg) == ErrCode::INVALID_ARG);
+
+            // Retransmissions should be detected and discarded
+            CHECK(ll.recv(msg) == ErrCode::MSG_DUP_ID);
+            CHECK(ll.recv(msg) == ErrCode::MSG_DUP_ID);
+        });
+
+        CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::TIMEOUT);
+        t.join();
+
+        std::this_thread::sleep_for(10ms);
+        CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PUB_1_GW2});
+        CHECK(ll.respSuccLog == RespSuccLog{true});
+    }
+
+    SECTION("Still valid timestamp")
+    {
+        // Make time difference too big to be considered valid
+        ll.respTsDiff = -ll.respTimeUnit *
+                        (modifConf.nodeConf.msgIdCache.maxAge - 1);
+        ll.responses.push(MSG_OK_GW2);
+
+        Client cl(modifConf, &ll);
+        CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::SUCCESS);
+
+        std::this_thread::sleep_for(10ms);
+        CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PUB_1_GW2});
+        CHECK(ll.respSuccLog == RespSuccLog{true, true});
+    }
+
+    SECTION("Invalid timestamp")
+    {
+        // Make time difference too big to be considered valid
+        ll.respTsDiff = -ll.respTimeUnit *
+                        (modifConf.nodeConf.msgIdCache.maxAge + 1);
+        ll.responses.push(MSG_OK_GW2);
+
+        Client cl(modifConf, &ll);
+        CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::TIMEOUT);
+
+        std::this_thread::sleep_for(10ms);
+        CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PUB_1_GW2});
+        CHECK(ll.respSuccLog == RespSuccLog{true, false});
+    }
+}
+
+TEST_CASE("Replay protection for SUB_DATA", "[Client]")
 {
     DEFAULT_LL(ll);
     ll.responses.push(MSG_PROBE_RES_GW2);
