@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 project(kvik_test)
 
-Include(FetchContent)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(FetchContent)
+
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -28,12 +30,29 @@ file(GLOB srcs CONFIGURE_DEPENDS
   "src/*.cpp"
   "tests/*.cpp"
 )
-add_executable(kvik_test ${srcs})
+add_executable(${PROJECT_NAME} ${srcs})
 
-set_property(TARGET kvik_test PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
-target_link_libraries(kvik_test PRIVATE Threads::Threads)
-target_link_libraries(kvik_test PRIVATE Catch2::Catch2)
-target_compile_definitions(kvik_test PRIVATE "-DGIT_VERSION=\"${GIT_VERSION}\"")
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+target_link_libraries(${PROJECT_NAME} PRIVATE Catch2::Catch2)
+target_compile_definitions(
+  ${PROJECT_NAME}
+  PRIVATE
+  "-DGIT_VERSION=\"${GIT_VERSION}\""
+)
+
+# Coverage
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+  include(CodeCoverage)
+  append_coverage_compiler_flags_to_target(${PROJECT_NAME})
+  set(GCOVR_ADDITIONAL_ARGS --exclude-unreachable-branches)
+  setup_target_for_coverage_gcovr_html(
+    NAME ${PROJECT_NAME}_coverage
+    EXECUTABLE ${PROJECT_NAME}
+    BASE_DIRECTORY ../
+    EXCLUDE test
+  )
+endif()
