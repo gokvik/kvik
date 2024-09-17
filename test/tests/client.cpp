@@ -1213,6 +1213,48 @@ TEST_CASE("Receive invalid response type", "[Client]")
     CHECK(ll.respSuccLog == RespSuccLog{true, false, false});
 }
 
+TEST_CASE("Receive response with various FAIL reasons", "[Client]")
+{
+    DEFAULT_LL(ll);
+    ll.responses.push(MSG_PROBE_RES_GW2);
+
+    auto msg = MSG_FAIL_GW2;
+    ErrCode correctRetCode;
+
+    SECTION("NONE")
+    {
+        msg.failReason = LocalMsgFailReason::NONE;
+    }
+
+    SECTION("DUP_ID")
+    {
+        msg.failReason = LocalMsgFailReason::DUP_ID;
+    }
+
+    SECTION("INVALID_TS")
+    {
+        msg.failReason = LocalMsgFailReason::INVALID_TS;
+    }
+
+    SECTION("PROCESSING_FAILED")
+    {
+        msg.failReason = LocalMsgFailReason::PROCESSING_FAILED;
+    }
+
+    SECTION("UNKNOWN_SENDER")
+    {
+        msg.failReason = LocalMsgFailReason::UNKNOWN_SENDER;
+    }
+
+    ll.responses.push(msg);
+    Client cl(CONF, &ll);
+    CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::MSG_PROCESSING_FAILED);
+
+    std::this_thread::sleep_for(10ms);
+    CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PUB_1_GW2});
+    CHECK(ll.respSuccLog == RespSuccLog{true, true});
+}
+
 TEST_CASE("Destructor resets local layer receive callback", "[Client]")
 {
     DEFAULT_LL(ll);

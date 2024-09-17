@@ -459,18 +459,10 @@ namespace kvik
 
         // Check if response isn't FAIL
         if (respMsg.type == LocalMsgType::FAIL) {
-            switch (respMsg.failReason) {
-            case LocalMsgFailReason::PROCESSING_FAILED: {
-                KVIK_LOGW("Message processing failed");
-                err = ErrCode::MSG_PROCESSING_FAILED;
-                goto fail;
-            }
-            default:
-                KVIK_LOGW("Message delivery failed with code %s",
-                          localMsgFailReasonToStr(respMsg.failReason));
-                err = ErrCode::MSG_PROCESSING_FAILED;
-                goto fail;
-            }
+            KVIK_LOGW("Message delivery failed with code %s",
+                      localMsgFailReasonToStr(respMsg.failReason));
+            err = ErrCode::MSG_PROCESSING_FAILED;
+            goto fail;
         }
 
         {
