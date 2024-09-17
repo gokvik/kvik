@@ -300,6 +300,10 @@ TEST_CASE("Initialization with retained data", "[Client]")
 
     SECTION("Sync failed, discovery successful")
     {
+        // Retained data contain channel even though local layer doesn't
+        // support channels.
+        // In this section, `ILocalLayer::setChannel()` doesn't fail, there's
+        // just no valid response.
         ll.respTsDiff = 100ms;
         ll.responses.push({});
         ll.responses.push(MSG_PROBE_RES_GW1);
@@ -312,6 +316,25 @@ TEST_CASE("Initialization with retained data", "[Client]")
                                     MSG_PROBE_REQ_GW1});
         CHECK(ll.respSuccLog == RespSuccLog{false, true, true});
         CHECK(ll.channelsLog == ChannelsLog{PEER_GW1.channel});
+    }
+
+    SECTION("Sync failed due to set channel failure, discovery successful")
+    {
+        // Retained data contain channel even though local layer doesn't
+        // support channels.
+        // In this section, `ILocalLayer::setChannel()` fails.
+        retained.gw.channel = 10;
+        ll.respTsDiff = 100ms;
+        ll.responses.push(MSG_PROBE_RES_GW1);
+        ll.responses.push(MSG_PROBE_RES_GW1);
+        ll.setChannelRet = ErrCode::GENERIC_FAILURE;
+
+        Client cl(CONF, &ll, retained);
+        cl.syncTime(); // Just to trigger message dispatch
+        std::this_thread::sleep_for(10ms);
+        CHECK(ll.sentLog == SentLog{MSG_PROBE_REQ, MSG_PROBE_REQ_GW1});
+        CHECK(ll.respSuccLog == RespSuccLog{true, true});
+        CHECK(ll.channelsLog == ChannelsLog{retained.gw.channel});
     }
 
     SECTION("Sync failed, discovery failed")
