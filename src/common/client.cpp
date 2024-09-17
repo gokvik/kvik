@@ -141,6 +141,7 @@ namespace kvik
         LocalMsg respMsg;
         KVIK_RETURN_ERROR(this->sendLocal(msg, respMsg));
         if (respMsg.type != LocalMsgType::OK) {
+            // Defensive check (already handled by `sendLocal()`)
             KVIK_LOGW("Received non-OK response");
             return ErrCode::MSG_PROCESSING_FAILED;
         }
@@ -190,6 +191,7 @@ namespace kvik
         LocalMsg respMsg;
         KVIK_RETURN_ERROR(this->sendLocal(msg, respMsg));
         if (respMsg.type != LocalMsgType::OK) {
+            // Defensive check (already handled by `sendLocal()`)
             KVIK_LOGW("Received non-OK response");
             return ErrCode::MSG_PROCESSING_FAILED;
         }
@@ -225,6 +227,7 @@ namespace kvik
         LocalMsg respMsg;
         KVIK_RETURN_ERROR(this->sendLocal(msg, respMsg));
         if (respMsg.type != LocalMsgType::OK) {
+            // Defensive check (already handled by `sendLocal()`)
             KVIK_LOGW("Received non-OK response");
             return ErrCode::MSG_PROCESSING_FAILED;
         }
@@ -388,6 +391,7 @@ namespace kvik
             goto fail;
         }
         if (respMsg.type != LocalMsgType::PROBE_RES) {
+            // Defensive check (already handled by `sendLocal()`)
             KVIK_LOGW("Received invalid response");
             err = ErrCode::MSG_PROCESSING_FAILED;
             goto fail;
