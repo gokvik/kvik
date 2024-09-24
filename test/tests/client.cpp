@@ -1368,7 +1368,7 @@ TEST_CASE("Reporting of RSSI after gateway discovery", "[Client]")
 
         std::this_thread::sleep_for(10ms);
 
-        // No publication should be made
+        // No report should be made
         REQUIRE(ll.sentLog.size() == 2 + 2);
         CHECK(ll.respSuccLog == RespSuccLog(2 + 2, true));
     }
@@ -1382,7 +1382,6 @@ TEST_CASE("Reporting of RSSI after gateway discovery", "[Client]")
         CHECK(cl.discoverGateway() == ErrCode::SUCCESS);
 
         std::this_thread::sleep_for(10ms);
-
         REQUIRE(ll.sentLog.size() == 2 + 2 + 1);
         CHECK((ll.sentLog.back().pubs == correctReportPub ||
                ll.sentLog.back().pubs == correctReportPubRev));
@@ -1397,10 +1396,20 @@ TEST_CASE("Reporting of RSSI after gateway discovery", "[Client]")
         CHECK(cl.discoverGateway() == ErrCode::SUCCESS);
 
         std::this_thread::sleep_for(10ms);
-
         REQUIRE(ll.sentLog.size() == 2 + 2 + 1);
         CHECK((ll.sentLog.back().pubs == correctReportPub ||
                ll.sentLog.back().pubs == correctReportPubRev));
         CHECK(ll.respSuccLog == RespSuccLog(2 + 2, true));
+    }
+
+    SECTION("Failure with RSSI")
+    {
+        CHECK(cl.discoverGateway() == ErrCode::TOO_MANY_FAILED_ATTEMPTS);
+
+        std::this_thread::sleep_for(10ms);
+
+        // No report should be made
+        REQUIRE(ll.sentLog.size() == 2 + 2);
+        CHECK(ll.respSuccLog == RespSuccLog(2, true));
     }
 }
