@@ -216,3 +216,19 @@ TEST_CASE("Validate message timestamp", "[Node]")
         CHECK_FALSE(node.validateMsgTimestamp(msgTsNow - 2, tsDiff));
     }
 }
+
+TEST_CASE("Build RSSI report topic", "[Node]")
+{
+    auto conf = DEFAULT_CONFIG;
+    conf.reporting.baseTopic = "REPORT";
+    conf.reporting.rssiSubtopic = "RSSI";
+    conf.topicSep.levelSeparator = "..";
+
+    LocalAddr peer;
+    peer.addr = {1, 2, 3};
+
+    DummyNode node(conf);
+
+    CHECK(node.buildReportRssiTopic(peer) ==
+          "REPORT..RSSI.." + peer.toString());
+}

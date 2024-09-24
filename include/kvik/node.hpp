@@ -196,5 +196,12 @@ namespace kvik
         bool validateMsgTimestamp(
             uint16_t ts,
             std::chrono::milliseconds tsDiff = std::chrono::milliseconds(0));
+        
+        /**
+         * @brief Builds RSSI report topic
+         * @param addr Peer address
+         * @return RSSI report topic
+         */
+        std::string buildReportRssiTopic(const LocalAddr &peer) const;
     };
 } // namespace kvik

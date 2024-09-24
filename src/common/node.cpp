@@ -67,4 +67,13 @@ namespace kvik
         return msgTsUnits <= nowUnits &&
                msgTsUnits >= nowUnits - maxDriftUnits;
     }
+
+    std::string INode::buildReportRssiTopic(const LocalAddr &peer) const
+    {
+        return m_nodeConf.reporting.baseTopic +
+               m_nodeConf.topicSep.levelSeparator +
+               m_nodeConf.reporting.rssiSubtopic +
+               m_nodeConf.topicSep.levelSeparator +
+               peer.toString();
+    }
 } // namespace kvik

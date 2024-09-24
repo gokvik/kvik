@@ -38,6 +38,7 @@ namespace kvik
         using INode::INode;
         using INode::validateMsgId;
         using INode::validateMsgTimestamp;
+        using INode::buildReportRssiTopic;
 
         ErrCode pubSubUnsubBulk(const std::vector<PubData> &newPubs,
                                 const std::vector<SubReq> &newSubs,
