@@ -15,15 +15,13 @@
 #include <string>
 #include <vector>
 
+#include "kvik/limits.hpp"
 #include "kvik/local_addr.hpp"
 #include "kvik/node_types.hpp"
 #include "kvik/pub_sub_struct.hpp"
 
 namespace kvik
 {
-    //! RSSI "unknown" value
-    constexpr int16_t MSG_RSSI_UNKNOWN = INT16_MIN;
-
     /**
      * @brief Local message types
      */
@@ -127,7 +125,7 @@ namespace kvik
          * in case of to be sent message should contain RSSI of corresponding
          * received message so that correct data rate can be chosen.
          */
-        int16_t rssi = MSG_RSSI_UNKNOWN;
+        int16_t rssi = RSSI_UNKNOWN;
 
         /**
          * @brief Peer preference (weight)
@@ -139,7 +137,7 @@ namespace kvik
          *
          * PROBE_RES only.
          */
-        int16_t pref = INT16_MIN;
+        int16_t pref = PREF_UNKNOWN;
 
         /**
          * @brief Gateway time difference
