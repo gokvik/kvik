@@ -81,6 +81,14 @@ namespace kvik
         struct Reporting
         {
             /**
+             * @brief Report RSSI during time synchronization
+             *
+             * Whether to report RSSI value (if used by local layer protocol)
+             * of PROBE_RES message received during time synchronization.
+             */
+            bool rssiOnTimeSync = true;
+
+            /**
              * @brief Report RSSI during gateway discovery
              *
              * Whether to report RSSI value (if used by local layer protocol)

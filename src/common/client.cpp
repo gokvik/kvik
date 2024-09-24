@@ -478,6 +478,17 @@ namespace kvik
             KVIK_LOGD("Successful (tsDiff=%zu ms)", m_gw.tsDiff.count());
         }
 
+        // Report gateway RSSI
+        if (m_conf.reporting.rssiOnTimeSync && respMsg.rssi != RSSI_UNKNOWN) {
+            auto reportErr = this->publish(
+                this->buildReportRssiTopic(m_gw.addr),
+                std::to_string(respMsg.rssi));
+
+            if (reportErr != ErrCode::SUCCESS) {
+                KVIK_LOGW("Reporting RSSI failed");
+            }
+        }
+
         return ErrCode::SUCCESS;
 
     fail:

@@ -45,6 +45,7 @@ static const ClientConfig CONF = {
         .trigTimeSyncNoRespCnt = 2,
     },
     .reporting = {
+        .rssiOnTimeSync = false,
         .rssiOnGwDscv = false,
     },
     .subDB = {
@@ -1411,5 +1412,67 @@ TEST_CASE("Reporting of RSSI after gateway discovery", "[Client]")
         // No report should be made
         REQUIRE(ll.sentLog.size() == 2 + 2);
         CHECK(ll.respSuccLog == RespSuccLog(2, true));
+    }
+}
+
+TEST_CASE("Reporting of RSSI after time sync", "[Client]")
+{
+    auto modifConf = CONF;
+    modifConf.reporting.rssiOnTimeSync = true;
+
+    DEFAULT_LL(ll);
+    ll.responses.push(MSG_PROBE_RES_GW2);
+
+    Client cl(modifConf, &ll);
+
+    std::vector<PubData> correctReportPub = {PUB_DATA_GW2_RSSI};
+
+    SECTION("Success without RSSI")
+    {
+        ll.responses.push(MSG_PROBE_RES_GW2);
+
+        CHECK(cl.syncTime() == ErrCode::SUCCESS);
+
+        std::this_thread::sleep_for(10ms);
+
+        // No report should be made
+        REQUIRE(ll.sentLog.size() == 2);
+        CHECK(ll.respSuccLog == RespSuccLog(2, true));
+    }
+
+    SECTION("Success with RSSI, report successful")
+    {
+        ll.responses.push(MSG_PROBE_RES_GW2_WITH_RSSI);
+        ll.responses.push(MSG_OK_GW2);
+
+        CHECK(cl.syncTime() == ErrCode::SUCCESS);
+
+        std::this_thread::sleep_for(10ms);
+        REQUIRE(ll.sentLog.size() == 3);
+        CHECK(ll.sentLog.back().pubs == correctReportPub);
+        CHECK(ll.respSuccLog == RespSuccLog(3, true));
+    }
+
+    SECTION("Success with RSSI, report failed")
+    {
+        ll.responses.push(MSG_PROBE_RES_GW2_WITH_RSSI);
+
+        CHECK(cl.syncTime() == ErrCode::SUCCESS);
+
+        std::this_thread::sleep_for(10ms);
+        REQUIRE(ll.sentLog.size() == 3);
+        CHECK(ll.sentLog.back().pubs == correctReportPub);
+        CHECK(ll.respSuccLog == RespSuccLog(2, true));
+    }
+
+    SECTION("Failure with RSSI")
+    {
+        CHECK(cl.syncTime() == ErrCode::TIMEOUT);
+
+        std::this_thread::sleep_for(10ms);
+
+        // No report should be made
+        REQUIRE(ll.sentLog.size() == 2);
+        CHECK(ll.respSuccLog == RespSuccLog{true});
     }
 }
