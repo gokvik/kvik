@@ -14,6 +14,7 @@
 #include "kvik/client_config.hpp"
 #include "kvik/errors.hpp"
 #include "kvik/layers.hpp"
+#include "kvik/limits.hpp"
 #include "kvik/logger.hpp"
 #include "kvik/node.hpp"
 #include "kvik/pub_sub_struct.hpp"
@@ -22,6 +23,8 @@
 
 // Log tag
 static const char *KVIK_LOG_TAG = "Kvik/Client";
+
+using namespace std::chrono_literals;
 
 namespace kvik
 {
@@ -241,7 +244,7 @@ namespace kvik
         auto delay = m_conf.gwDscv.dscvMinDelay;
         auto respTimeout = m_conf.nodeConf.localDelivery.respTimeout;
 
-        LocalPeer bestGw;
+        LocalPeerSet gws;
         LocalMsg msg;
         msg.type = LocalMsgType::PROBE_REQ;
 
@@ -262,7 +265,7 @@ namespace kvik
                 if (channels.empty()) {
                     // No channels on local layer, don't set it
                     KVIK_LOGD("Probing default channel");
-                    this->processGatewayDiscoveryResponses(msg, bestGw, 0);
+                    this->processGwDscvResps(msg, gws, 0);
                 } else {
                     // Iterate all possible channels and discover all possible
                     // gateways
@@ -272,23 +275,40 @@ namespace kvik
                             continue;
                         }
                         KVIK_LOGD("Probing channel %u", ch);
-                        this->processGatewayDiscoveryResponses(msg, bestGw, ch);
+                        this->processGwDscvResps(msg, gws, ch);
                     }
                 }
 
                 m_ignoreInvalidMsgTs = false;
 
-                if (!bestGw.empty()) {
-                    // Found new best gateway
-                    const std::scoped_lock lock(m_mutex);
-                    if (!channels.empty()) {
-                        m_ll->setChannel(bestGw.channel);
+                if (!gws.empty()) {
+                    // Find maximum preference gateway
+                    LocalPeer bestGw;
+                    for (const auto &gw : gws) {
+                        if (gw.pref > bestGw.pref) {
+                            bestGw = gw;
+                        }
                     }
-                    m_gw = bestGw;
-                    m_msgsFailCnt = 0;
-                    m_timeSyncNoRespCnt = 0;
-                    KVIK_LOGI("Using new gateway: %s", m_gw.toString().c_str());
+
+                    // Set new best gateway
+                    {
+                        const std::scoped_lock lock(m_mutex);
+                        if (!channels.empty()) {
+                            m_ll->setChannel(bestGw.channel);
+                        }
+                        m_gw = bestGw;
+                        m_msgsFailCnt = 0;
+                        m_timeSyncNoRespCnt = 0;
+                    }
+
+                    KVIK_LOGI("Using new gateway: %s",
+                              m_gw.toString().c_str());
                     KVIK_LOGD("Attempt %zu successful", attemptsCnt + 1);
+
+                    if (this->reportGwDscvRssi(gws) != ErrCode::SUCCESS) {
+                        KVIK_LOGW("Reporting RSSI failed");
+                    }
+
                     return ErrCode::SUCCESS;
                 } else {
                     // Reset gateway
@@ -325,23 +345,56 @@ namespace kvik
         return ErrCode::TOO_MANY_FAILED_ATTEMPTS;
     }
 
-    void Client::processGatewayDiscoveryResponses(LocalMsg &msg,
-                                                  LocalPeer &bestGw,
-                                                  uint16_t channel)
+    void Client::processGwDscvResps(LocalMsg &msg, LocalPeerSet &gws,
+                                    uint16_t channel)
     {
         // Broadcast probe
         LocalMsgVector responses;
         this->sendLocalUncheckedBroadcast(msg, responses);
 
         for (const auto &resp : responses) {
-            if (resp.pref > bestGw.pref) {
-                // Found better gateway
-                bestGw.addr = resp.addr;
-                bestGw.channel = channel;
-                bestGw.pref = resp.pref;
-                bestGw.tsDiff = resp.tsDiff;
-            }
+            LocalPeer peer;
+            peer.addr = resp.addr;
+            peer.channel = channel;
+            peer.pref = resp.pref;
+            peer.rssi = resp.rssi;
+            peer.tsDiff = resp.tsDiff;
+            gws.insert(peer);
         }
+    }
+
+    ErrCode Client::reportGwDscvRssi(const LocalPeerSet &gws)
+    {
+        if (!m_conf.reporting.rssiOnGwDscv) {
+            // Reporting disabled
+            return ErrCode::SUCCESS;
+        }
+
+        std::vector<kvik::PubData> pubs;
+
+        // Populate publications
+        for (const auto &gw : gws) {
+            if (gw.rssi == RSSI_UNKNOWN) {
+                continue;
+            }
+
+            pubs.push_back({
+                .topic = m_conf.nodeConf.reporting.baseTopic +
+                         m_conf.nodeConf.topicSep.levelSeparator +
+                         m_conf.nodeConf.reporting.rssiSubtopic +
+                         m_conf.nodeConf.topicSep.levelSeparator +
+                         gw.addr.toString(),
+                .payload = std::to_string(gw.rssi),
+            });
+        }
+
+        if (pubs.empty()) {
+            // Nothing to publish
+            return ErrCode::SUCCESS;
+        }
+
+        // Send the message
+        return this->publishBulk(pubs);
     }
 
     void Client::gwWatchdogHandler()

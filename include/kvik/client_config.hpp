@@ -80,7 +80,17 @@ namespace kvik
 
         struct Reporting
         {
-            // TODO
+            /**
+             * @brief Report RSSI during gateway discovery
+             *
+             * Whether to report RSSI value (if used by local layer protocol)
+             * of all PROBE_RES messages received during time synchronization.
+             * In other words, client reports signal strength to all available
+             * gateways.
+             *
+             * Only one message is generated containing all publications.
+             */
+            bool rssiOnGwDscv = true;
         };
 
         struct SubDB

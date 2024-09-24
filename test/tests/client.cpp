@@ -45,7 +45,7 @@ static const ClientConfig CONF = {
         .trigTimeSyncNoRespCnt = 2,
     },
     .reporting = {
-        // TODO
+        .rssiOnGwDscv = false,
     },
     .subDB = {
         .subLifetime = 1s,
@@ -122,6 +122,17 @@ static LocalMsg MSG_PROBE_RES_GW2 = {
     .nodeType = NodeType::GATEWAY,
     .pref = 200,
 };
+static LocalMsg MSG_PROBE_RES_GW2_WITH_RSSI = {
+    .type = LocalMsgType::PROBE_RES,
+    .addr = PEER_GW2.addr,
+    .nodeType = NodeType::GATEWAY,
+    .rssi = -40,
+    .pref = 200,
+};
+static PubData PUB_DATA_GW2_RSSI = {
+    .topic = "_report/rssi/" + PEER_GW2.addr.toString(),
+    .payload = "-40",
+};
 static LocalMsg MSG_PROBE_REQ_GW3 = {
     .type = LocalMsgType::PROBE_REQ,
     .addr = PEER_GW3.addr,
@@ -152,8 +163,19 @@ static LocalMsg MSG_PROBE_REQ_RELAY1 = {
 static LocalMsg MSG_PROBE_RES_RELAY1 = {
     .type = LocalMsgType::PROBE_RES,
     .addr = PEER_RELAY1.addr,
-    .nodeType = NodeType::GATEWAY,
+    .nodeType = NodeType::RELAY,
     .pref = 50,
+};
+static LocalMsg MSG_PROBE_RES_RELAY1_WITH_RSSI = {
+    .type = LocalMsgType::PROBE_RES,
+    .addr = PEER_RELAY1.addr,
+    .nodeType = NodeType::RELAY,
+    .rssi = -74,
+    .pref = 50,
+};
+static PubData PUB_DATA_RELAY1_RSSI = {
+    .topic = "_report/rssi/" + PEER_RELAY1.addr.toString(),
+    .payload = "-74",
 };
 
 // OK
@@ -1318,4 +1340,67 @@ TEST_CASE("ILocalLayer::send() fails", "[Client]")
     // Check error from local layer is propagated correctly
     ll.sendRet = ErrCode::GENERIC_FAILURE;
     CHECK(cl.publish(TOPIC1, PAYLOAD1) == ErrCode::GENERIC_FAILURE);
+}
+
+TEST_CASE("Reporting of RSSI after gateway discovery", "[Client]")
+{
+    auto modifConf = CONF;
+    modifConf.reporting.rssiOnGwDscv = true;
+
+    DEFAULT_LL(ll);
+    ll.channels = {0, 1};
+    ll.responses.push(MSG_PROBE_RES_GW2);
+    ll.responses.push(MSG_PROBE_RES_RELAY1);
+
+    Client cl(modifConf, &ll);
+
+    std::vector<PubData> correctReportPub = {PUB_DATA_GW2_RSSI,
+                                             PUB_DATA_RELAY1_RSSI};
+    std::vector<PubData> correctReportPubRev = {PUB_DATA_RELAY1_RSSI,
+                                                PUB_DATA_GW2_RSSI};
+
+    SECTION("Success without RSSI")
+    {
+        ll.responses.push(MSG_PROBE_RES_RELAY1);
+        ll.responses.push(MSG_PROBE_RES_GW2);
+
+        CHECK(cl.discoverGateway() == ErrCode::SUCCESS);
+
+        std::this_thread::sleep_for(10ms);
+
+        // No publication should be made
+        REQUIRE(ll.sentLog.size() == 2 + 2);
+        CHECK(ll.respSuccLog == RespSuccLog(2 + 2, true));
+    }
+
+    SECTION("Success with RSSI, report successful")
+    {
+        ll.responses.push(MSG_PROBE_RES_RELAY1_WITH_RSSI);
+        ll.responses.push(MSG_PROBE_RES_GW2_WITH_RSSI);
+        ll.responses.push(MSG_OK_GW2);
+
+        CHECK(cl.discoverGateway() == ErrCode::SUCCESS);
+
+        std::this_thread::sleep_for(10ms);
+
+        REQUIRE(ll.sentLog.size() == 2 + 2 + 1);
+        CHECK((ll.sentLog.back().pubs == correctReportPub ||
+               ll.sentLog.back().pubs == correctReportPubRev));
+        CHECK(ll.respSuccLog == RespSuccLog(2 + 2 + 1, true));
+    }
+
+    SECTION("Success with RSSI, report failed")
+    {
+        ll.responses.push(MSG_PROBE_RES_RELAY1_WITH_RSSI);
+        ll.responses.push(MSG_PROBE_RES_GW2_WITH_RSSI);
+
+        CHECK(cl.discoverGateway() == ErrCode::SUCCESS);
+
+        std::this_thread::sleep_for(10ms);
+
+        REQUIRE(ll.sentLog.size() == 2 + 2 + 1);
+        CHECK((ll.sentLog.back().pubs == correctReportPub ||
+               ll.sentLog.back().pubs == correctReportPubRev));
+        CHECK(ll.respSuccLog == RespSuccLog(2 + 2, true));
+    }
 }

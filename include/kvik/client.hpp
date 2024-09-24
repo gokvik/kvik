@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <future>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "kvik/client_config.hpp"
 #include "kvik/errors.hpp"
@@ -51,6 +52,7 @@ namespace kvik
     {
     private:
         using LocalMsgVector = std::vector<LocalMsg>;
+        using LocalPeerSet = std::unordered_set<LocalPeer>;
 
         /**
          * @brief Structure for sent messages pending for response
@@ -267,11 +269,11 @@ namespace kvik
          * Helper for `processGatewayDiscovery` member function.
          *
          * @param msg Broadcasted message
-         * @param bestGw Best gateway storage
+         * @param gws Gateways storage
          * @param channel Current channel number
          */
-        void processGatewayDiscoveryResponses(LocalMsg &msg, LocalPeer &bestGw,
-                                              uint16_t channel);
+        void processGwDscvResps(LocalMsg &msg, LocalPeerSet &gws,
+                                uint16_t channel);
 
     private:
         /**
@@ -328,5 +330,16 @@ namespace kvik
          * @retval SUCCESS Successfully processed
          */
         ErrCode recvLocalSubData(const LocalMsg &msg);
+
+        /**
+         * @brief Reports gateway RSSI values after successful discovery
+         *
+         * If `ClientConfig::Reporting::rssiOnGwDscv` is `false`, does nothing.
+         *
+         * @param gws Gateways storage
+         * @retval SUCCESS Nothing to do
+         * @retval * Any other code returned by `publishBulk`
+         */
+        ErrCode reportGwDscvRssi(const LocalPeerSet &gws);
     };
 } // namespace kvik
