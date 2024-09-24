@@ -13,6 +13,7 @@
 #include <chrono>
 #include <cstdint>
 
+#include "kvik/limits.hpp"
 #include "kvik/local_addr.hpp"
 
 namespace kvik
@@ -67,7 +68,14 @@ namespace kvik
          * layers.
          * Higher value means higher preference.
          */
-        int16_t pref = INT16_MIN;
+        int16_t pref = PREF_UNKNOWN;
+
+        /**
+         * @brief RSSI of probe response from the peer
+         *
+         * Only relevant for RF local layers.
+         */
+        int16_t rssi = RSSI_UNKNOWN;
 
         /**
          * @brief Gateway time difference
