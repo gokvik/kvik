@@ -370,7 +370,7 @@ namespace kvik
             return ErrCode::SUCCESS;
         }
 
-        std::vector<kvik::PubData> pubs;
+        std::vector<PubData> pubs;
 
         // Populate publications
         for (const auto &gw : gws) {
@@ -379,11 +379,7 @@ namespace kvik
             }
 
             pubs.push_back({
-                .topic = m_conf.nodeConf.reporting.baseTopic +
-                         m_conf.nodeConf.topicSep.levelSeparator +
-                         m_conf.nodeConf.reporting.rssiSubtopic +
-                         m_conf.nodeConf.topicSep.levelSeparator +
-                         gw.addr.toString(),
+                .topic = this->buildReportRssiTopic(gw.addr),
                 .payload = std::to_string(gw.rssi),
             });
         }
