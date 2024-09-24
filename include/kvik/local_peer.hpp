@@ -97,18 +97,6 @@ namespace kvik
             return !this->operator==(other);
         }
 
-        // Based on preference
-        bool operator<(const LocalPeer &other) const
-        {
-            return pref < other.pref;
-        }
-
-        // Based on preference
-        bool operator>(const LocalPeer &other) const
-        {
-            return pref > other.pref;
-        }
-
         bool empty() const
         {
             return addr.empty();

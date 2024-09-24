@@ -21,16 +21,12 @@ TEST_CASE("Comparison", "[LocalPeer]")
     SECTION("Equality")
     {
         CHECK(peer1 == peer2);
-        CHECK_FALSE(peer1 < peer2);
-        CHECK_FALSE(peer1 > peer2);
     }
 
     SECTION("Different address")
     {
         peer2.addr.addr.push_back(0x01);
         CHECK(peer1 != peer2);
-        CHECK_FALSE(peer1 < peer2);
-        CHECK_FALSE(peer1 > peer2);
     }
 
     SECTION("Different channel")
@@ -38,8 +34,6 @@ TEST_CASE("Comparison", "[LocalPeer]")
         // Treated as additional data
         peer2.channel = 1;
         CHECK(peer1 == peer2);
-        CHECK_FALSE(peer1 < peer2);
-        CHECK_FALSE(peer1 > peer2);
     }
 
     SECTION("Different time difference")
@@ -47,28 +41,22 @@ TEST_CASE("Comparison", "[LocalPeer]")
         // Treated as additional data
         peer2.tsDiff = 100ms;
         CHECK(peer1 == peer2);
-        CHECK_FALSE(peer1 < peer2);
-        CHECK_FALSE(peer1 > peer2);
     }
 
-    SECTION("Less preference")
+    SECTION("Different preference")
     {
         // Treated as additional data
         peer1.pref = 0;
         peer2.pref = 100;
         CHECK(peer1 == peer2);
-        CHECK(peer1 < peer2);
-        CHECK_FALSE(peer1 > peer2);
     }
 
-    SECTION("Greater preference")
+    SECTION("Different RSSI")
     {
         // Treated as additional data
-        peer1.pref = 100;
-        peer2.pref = 0;
+        peer1.rssi = 0;
+        peer2.rssi = 100;
         CHECK(peer1 == peer2);
-        CHECK_FALSE(peer1 < peer2);
-        CHECK(peer1 > peer2);
     }
 }
 
